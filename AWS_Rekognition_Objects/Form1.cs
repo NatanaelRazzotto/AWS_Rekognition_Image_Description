@@ -33,14 +33,14 @@ namespace AWS_Rekognition_Objects
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            btnAnalizar.Enabled = false;
+            btnAnalizarImage.Enabled = false;
         }
 
       
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
         {
-            btnAnalizar.Enabled = false;
+            btnAnalizarImage.Enabled = false;
             openFileDialog1.InitialDirectory = "c:\\";
             openFileDialog1.Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png";
             openFileDialog1.Title = "Selecione uma Imagem a Ser Analizada";
@@ -49,12 +49,12 @@ namespace AWS_Rekognition_Objects
                 controller = new Controller(this);
                // string fileName = controller.definirArquivoImage(openFileDialog1.FileName);
                 pictureBoxImage.Load(controller.definirArquivoImage(openFileDialog1.FileName));
-                btnAnalizar.Enabled = true;
+                btnAnalizarImage.Enabled = true;
             }
             
         }
 
-        private async void btnAnalizar_Click(object sender, EventArgs e)
+        private async void btnAnalizarImage_Click(object sender, EventArgs e)
         {
             if (controller.verificarArquivo())
             {
@@ -70,8 +70,8 @@ namespace AWS_Rekognition_Objects
                     rtbRetornoProcesso.Clear();
                     rtbRetornoProcesso.AppendText("Crecenciais NÃO obtidas com sucesso");
                 }
-               
-               // await DetectScenes(controller.obtemNomeArquivo());
+
+                // await DetectScenes(controller.obtemNomeArquivo());
             }
             else
             {
@@ -96,6 +96,32 @@ namespace AWS_Rekognition_Objects
                                            instance.BoundingBox.Height * pictureBoxImage.Image.Height
                            );
                 }
+            }
+        }
+        /// <summary>
+        /// Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas
+        /// Verificar o uso de uma estrutura desse modo ao invez de usar um objeto de forma crua
+        /// </summary>
+        /// <param name="labelObjects"></param>
+        public void convertResponseInObjectcategory(List<Label> labelObjects)
+        {
+            foreach (Label item in labelObjects)
+            {
+                Graphics graphics = pictureBoxImage.CreateGraphics();
+                Pen pen = new Pen(Color.Red);
+                RectangleF[] listRectangleF = new RectangleF[labelObjects.Count];
+                for (int i = 0; i < item.Instances.Count; i++)
+                {
+                    Instance itemLabel = item.Instances[i];
+                    RectangleF rectangle = new RectangleF(itemLabel.BoundingBox.Left * pictureBoxImage.Image.Width,
+                                                          itemLabel.BoundingBox.Top * pictureBoxImage.Image.Height,
+                                                          itemLabel.BoundingBox.Width * pictureBoxImage.Image.Width,
+                                                          itemLabel.BoundingBox.Height * pictureBoxImage.Image.Height);
+                    listRectangleF[i] = rectangle;
+                }
+                graphics.DrawRectangles(pen, listRectangleF);
+                     //graphics.DrawRectangle(pen, rectangle);                
+
             }
         }
 
@@ -132,5 +158,8 @@ namespace AWS_Rekognition_Objects
             }
            // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
         }
+
+
+        
     }
 }

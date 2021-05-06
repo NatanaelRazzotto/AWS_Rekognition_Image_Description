@@ -102,5 +102,6 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 
 
         }
+
     }
 }

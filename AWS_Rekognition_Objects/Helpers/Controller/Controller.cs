@@ -53,6 +53,7 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         private async Task desenharAnalise()//DetectLabelsResponse detectLabelsResponse
         {
             formPrincipal.desenharAnalise(detectLabelsResponse.Labels);
+            //formPrincipal.convertResponseInObjectcategory(detectLabelsResponse.Labels);
         }
 
         public DetectLabelsResponse getDetectLabelsResponse() {
