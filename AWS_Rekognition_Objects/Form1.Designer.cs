@@ -30,6 +30,7 @@ namespace AWS_Rekognition_Objects
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnAnalizarImage = new System.Windows.Forms.Button();
             this.btnImageBrowse = new System.Windows.Forms.Button();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -42,7 +43,7 @@ namespace AWS_Rekognition_Objects
             this.lblNomeArquivo = new System.Windows.Forms.Label();
             this.rtbRetornoProcesso = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnAnalizarImage = new System.Windows.Forms.Button();
+            this.btnSelection = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
@@ -61,6 +62,21 @@ namespace AWS_Rekognition_Objects
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1305, 68);
             this.panel1.TabIndex = 1;
+            // 
+            // btnAnalizarImage
+            // 
+            this.btnAnalizarImage.BackColor = System.Drawing.Color.Black;
+            this.btnAnalizarImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnAnalizarImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAnalizarImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAnalizarImage.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.btnAnalizarImage.Location = new System.Drawing.Point(975, 19);
+            this.btnAnalizarImage.Name = "btnAnalizarImage";
+            this.btnAnalizarImage.Size = new System.Drawing.Size(134, 34);
+            this.btnAnalizarImage.TabIndex = 8;
+            this.btnAnalizarImage.Text = "Analisar Imagem";
+            this.btnAnalizarImage.UseVisualStyleBackColor = false;
+            this.btnAnalizarImage.Click += new System.EventHandler(this.btnAnalizarImage_Click);
             // 
             // btnImageBrowse
             // 
@@ -113,6 +129,7 @@ namespace AWS_Rekognition_Objects
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.panel3.Controls.Add(this.btnSelection);
             this.panel3.Controls.Add(this.label2);
             this.panel3.Controls.Add(this.pbImageZoom);
             this.panel3.Controls.Add(this.treeViewLabels);
@@ -191,20 +208,15 @@ namespace AWS_Rekognition_Objects
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnAnalizarImage
+            // btnSelection
             // 
-            this.btnAnalizarImage.BackColor = System.Drawing.Color.Black;
-            this.btnAnalizarImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnAnalizarImage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAnalizarImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAnalizarImage.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnAnalizarImage.Location = new System.Drawing.Point(975, 19);
-            this.btnAnalizarImage.Name = "btnAnalizarImage";
-            this.btnAnalizarImage.Size = new System.Drawing.Size(134, 34);
-            this.btnAnalizarImage.TabIndex = 8;
-            this.btnAnalizarImage.Text = "Analisar Imagem";
-            this.btnAnalizarImage.UseVisualStyleBackColor = false;
-            this.btnAnalizarImage.Click += new System.EventHandler(this.btnAnalizarImage_Click);
+            this.btnSelection.Location = new System.Drawing.Point(10, 76);
+            this.btnSelection.Name = "btnSelection";
+            this.btnSelection.Size = new System.Drawing.Size(223, 23);
+            this.btnSelection.TabIndex = 7;
+            this.btnSelection.Text = "SelecionarItem (test)";
+            this.btnSelection.UseVisualStyleBackColor = true;
+            this.btnSelection.Click += new System.EventHandler(this.btnSelection_Click);
             // 
             // Form1
             // 
@@ -245,6 +257,7 @@ namespace AWS_Rekognition_Objects
         private System.Windows.Forms.TreeView treeViewLabels;
         private System.Windows.Forms.Button btnImageBrowse;
         private System.Windows.Forms.Button btnAnalizarImage;
+        private System.Windows.Forms.Button btnSelection;
     }
 }
 

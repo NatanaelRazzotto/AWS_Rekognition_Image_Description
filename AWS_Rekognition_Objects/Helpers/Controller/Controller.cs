@@ -11,17 +11,16 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
 {
     class Controller
     {
-        Analizer analizadorArquivo;
+        AnaliserLabelsAWS analizadorArquivo;
         FileImage fileImage;
         Form1 formPrincipal;
-        DetectLabelsResponse detectLabelsResponse;
         public Controller(Form1 formPrincipal) {
             this.formPrincipal = formPrincipal;
         }
 
         public string definirArquivoImage(String nameFile) {
             fileImage = new FileImage(nameFile);
-            this.analizadorArquivo = new Analizer(fileImage);
+            this.analizadorArquivo = new AnaliserLabelsAWS(fileImage);
             return fileImage.nameFile;
         }
         public bool verificarArquivo() {
@@ -42,28 +41,41 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         public string obtemNomeArquivo() {
             return fileImage.nameFile;
         }
-        public async void analizarImagens() {
+        public async void analizarImagens(int pictureWidth, int pictureHeight) {
+           analizadorArquivo.DefinirDimensoesPicture(pictureWidth, pictureHeight);
            bool inclusao = await analizadorArquivo.UploadImageFromS3();
             if (inclusao)
             {
-                detectLabelsResponse = await analizadorArquivo.DetectScenes();
+                await analizadorArquivo.DetectScenes();
+               // detectLabelsResponse = analizadorArquivo.getListlabelObjectsCategories();
                 await desenharAnalise();
             }
         }
         private async Task desenharAnalise()//DetectLabelsResponse detectLabelsResponse
         {
-            formPrincipal.desenharAnalise(detectLabelsResponse.Labels);
+            formPrincipal.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories());
             //formPrincipal.convertResponseInObjectcategory(detectLabelsResponse.Labels);
         }
-
-        public DetectLabelsResponse getDetectLabelsResponse() {
-            return detectLabelsResponse;
+        //[Obsolete("Metodo de teste não incluido na versão final.")]
+        public List<Label> getDetectLabelsResponse() {
+            return analizadorArquivo.getListlabelObjectsCategories();
         }
 
         public async Task<bool> ValidarOperacao()
         {
             bool validador = await analizadorArquivo.getCredentialsAWS();
             return validador;
+        }
+
+        public Label FilterViewByCategory(int IndexCategory)
+        {
+            List<Label> labelsDetecteds = analizadorArquivo.getListlabelObjectsCategories();
+            return labelsDetecteds[IndexCategory];
+        }
+        public List<Instance> FilterViewByCategorybyInstances(int IndexCategory)
+        {
+            List<Instance> labelsDetecteds = FilterViewByCategory(IndexCategory).Instances;
+            return labelsDetecteds;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace AWS_Rekognition_Objects
 {
     public partial class Form1 : Form
     {
-       // ViewForm viewForm;
+        // ViewForm viewForm;
         Controller controller;
         public Form1()
         {
@@ -36,7 +36,7 @@ namespace AWS_Rekognition_Objects
             btnAnalizarImage.Enabled = false;
         }
 
-      
+
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
         {
@@ -47,11 +47,11 @@ namespace AWS_Rekognition_Objects
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 controller = new Controller(this);
-               // string fileName = controller.definirArquivoImage(openFileDialog1.FileName);
+                // string fileName = controller.definirArquivoImage(openFileDialog1.FileName);
                 pictureBoxImage.Load(controller.definirArquivoImage(openFileDialog1.FileName));
                 btnAnalizarImage.Enabled = true;
             }
-            
+
         }
 
         private async void btnAnalizarImage_Click(object sender, EventArgs e)
@@ -61,7 +61,7 @@ namespace AWS_Rekognition_Objects
                 bool getCrendentials = await controller.ValidarOperacao();
                 if (getCrendentials)
                 {
-                    controller.analizarImagens();
+                    controller.analizarImagens(pictureBoxImage.Image.Width, pictureBoxImage.Image.Height);
                     rtbRetornoProcesso.Clear();
                     rtbRetornoProcesso.AppendText("Crecenciais Obtidas com Sucesso");
                 }
@@ -89,20 +89,13 @@ namespace AWS_Rekognition_Objects
                     rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
                     Pen pen = new Pen(Color.Red);
                     Graphics graphics = pictureBoxImage.CreateGraphics();
-                    graphics.DrawRectangle(pen,
-                                           instance.BoundingBox.Left * pictureBoxImage.Image.Width,
-                                           instance.BoundingBox.Top * pictureBoxImage.Image.Height,
-                                           instance.BoundingBox.Width * pictureBoxImage.Image.Width,
-                                           instance.BoundingBox.Height * pictureBoxImage.Image.Height
-                           );
+                    graphics.DrawRectangle(pen, instance.BoundingBox.Left, instance.BoundingBox.Top,
+                                           instance.BoundingBox.Width, instance.BoundingBox.Height);
                 }
             }
         }
-        /// <summary>
-        /// Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas
-        /// Verificar o uso de uma estrutura desse modo ao invez de usar um objeto de forma crua
-        /// </summary>
-        /// <param name="labelObjects"></param>
+        [Obsolete("Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas" +
+                   "Verificar o uso de uma estrutura desse modo ao invez de usar um objeto de forma crua")]
         public void convertResponseInObjectcategory(List<Label> labelObjects)
         {
             foreach (Label item in labelObjects)
@@ -139,7 +132,7 @@ namespace AWS_Rekognition_Objects
         {
             double coordinateX = e.X ;
             int coordinateY = e.Y;
-            List<Label> detectLabels = controller.getDetectLabelsResponse().Labels;
+            List<Label> detectLabels = controller.getDetectLabelsResponse();
             foreach (Label itemLabel in detectLabels)
             {
                 foreach (Instance item in itemLabel.Instances)
@@ -159,7 +152,12 @@ namespace AWS_Rekognition_Objects
            // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
         }
 
+        private void btnSelection_Click(object sender, EventArgs e)
+        {
+            controller.FilterViewByCategorybyInstances(1);
+            //TODO: evento acionando que tera o mesmo comportamento do button TreeView
+            //Quando pronto usar esse para popular os campos subsequentes....
 
-        
+        }
     }
 }

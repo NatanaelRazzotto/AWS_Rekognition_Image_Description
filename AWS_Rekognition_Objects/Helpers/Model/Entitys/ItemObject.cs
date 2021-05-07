@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
 {
-    class ObjetoCategorizado
+    public class ItemObject
     {
-        public List<RectangleF> Instances { get; set; }//Uma lista de Rentagulos por categoria
-        public string Name { get; set; }
+        public Pen penItem { get; set; }
+        public RectangleF Rectangle { get; set; }
+        public float Confidence { get; set; }
     }
 }
