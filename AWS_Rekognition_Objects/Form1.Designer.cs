@@ -43,8 +43,8 @@ namespace AWS_Rekognition_Objects
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.nudConfidence = new System.Windows.Forms.NumericUpDown();
+            this.nudNumLabels = new System.Windows.Forms.NumericUpDown();
             this.btnSelection = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -57,8 +57,8 @@ namespace AWS_Rekognition_Objects
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudConfidence)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNumLabels)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -177,8 +177,8 @@ namespace AWS_Rekognition_Objects
             this.panel3.Controls.Add(this.label4);
             this.panel3.Controls.Add(this.label3);
             this.panel3.Controls.Add(this.label5);
-            this.panel3.Controls.Add(this.numericUpDown3);
-            this.panel3.Controls.Add(this.numericUpDown1);
+            this.panel3.Controls.Add(this.nudConfidence);
+            this.panel3.Controls.Add(this.nudNumLabels);
             this.panel3.Controls.Add(this.btnSelection);
             this.panel3.Controls.Add(this.label2);
             this.panel3.Controls.Add(this.pictureBox1);
@@ -241,19 +241,19 @@ namespace AWS_Rekognition_Objects
             this.label5.TabIndex = 13;
             this.label5.Text = "Minimo de Confidence";
             // 
-            // numericUpDown3
+            // nudConfidence
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(286, 87);
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(136, 23);
-            this.numericUpDown3.TabIndex = 12;
+            this.nudConfidence.Location = new System.Drawing.Point(286, 87);
+            this.nudConfidence.Name = "nudConfidence";
+            this.nudConfidence.Size = new System.Drawing.Size(136, 23);
+            this.nudConfidence.TabIndex = 12;
             // 
-            // numericUpDown1
+            // nudNumLabels
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(71, 87);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(131, 23);
-            this.numericUpDown1.TabIndex = 8;
+            this.nudNumLabels.Location = new System.Drawing.Point(71, 87);
+            this.nudNumLabels.Name = "nudNumLabels";
+            this.nudNumLabels.Size = new System.Drawing.Size(131, 23);
+            this.nudNumLabels.TabIndex = 8;
             // 
             // btnSelection
             // 
@@ -350,8 +350,8 @@ namespace AWS_Rekognition_Objects
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudConfidence)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudNumLabels)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
@@ -375,8 +375,8 @@ namespace AWS_Rekognition_Objects
         private System.Windows.Forms.Button btnSelection;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown nudConfidence;
+        private System.Windows.Forms.NumericUpDown nudNumLabels;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnRestart;
         private System.Windows.Forms.Button btnLimparCategorias;

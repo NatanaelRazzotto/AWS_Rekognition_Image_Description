@@ -84,7 +84,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 
         }
 
-        public async Task<bool> DetectScenes()
+        public async Task<bool> DetectScenes(int numberLabels, Single minConfidence)
         {
             AmazonRekognitionClient rekognitionClient = new AmazonRekognitionClient(awsCredentials, region);
             DetectLabelsRequest detectLabelsRequest = new DetectLabelsRequest()
@@ -98,8 +98,8 @@ namespace AWS_Rekognition_Objects.Helpers.Model
                     },
 
                 },
-                MaxLabels = 20,
-                MinConfidence = 50F
+                MaxLabels = numberLabels,
+                MinConfidence = minConfidence //75F
             };
             try
             {
@@ -110,6 +110,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             }
             catch (Exception e)
             {
+
                 //rtbRetornoProcesso.AppendText($"Ocorreu um erro{e.Message}");
                 Console.WriteLine($"Ocorreu um erro{e.Message}");
                 return false;

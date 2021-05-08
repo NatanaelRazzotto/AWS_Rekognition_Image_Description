@@ -90,11 +90,29 @@ namespace AWS_Rekognition_Objects
                 bool getCrendentials = await controller.ValidarOperacao();
                 if (getCrendentials)
                 {
-                    controller.analizarImagens(pictureBoxImage.Image.Width, pictureBoxImage.Image.Height);
-                    rtbRetornoProcesso.Clear();
-                    rtbRetornoProcesso.AppendText("Dados Obtidas com Sucesso");
-                    btnLimparCategorias.Enabled = true;
-                    btnRestart.Enabled = true;
+                    int numbLabels = Convert.ToInt32(nudNumLabels.Value);
+                    Single confidence = Convert.ToSingle(nudConfidence.Value);
+                    if ((numbLabels == 0) && (confidence == 0))
+                    {
+                        DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja trabalhar com os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                        if (dr == DialogResult.Yes)
+                        {
+                            controller.analizarImagens(20, 75);
+                            rtbRetornoProcesso.Clear();
+                            rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
+                            btnLimparCategorias.Enabled = true;
+                            btnRestart.Enabled = true;
+                        }
+                    }
+                    else
+                    {
+                        controller.analizarImagens(numbLabels, confidence);
+                        rtbRetornoProcesso.Clear();
+                        rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
+                        btnLimparCategorias.Enabled = true;
+                        btnRestart.Enabled = true;
+                    }
+
                 }
                 else
                 {

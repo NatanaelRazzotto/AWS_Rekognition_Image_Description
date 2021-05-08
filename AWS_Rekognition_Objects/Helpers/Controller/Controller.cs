@@ -52,11 +52,11 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         public string obtemNomeArquivo() {
             return fileImage.nameFile;
         }
-        public async void analizarImagens(int pictureWidth, int pictureHeight) {
+        public async void analizarImagens(int numberLabels, Single minConfidence) {
             bool inclusao = await analizadorArquivo.UploadImageFromS3();
             if (inclusao)
             {
-                await analizadorArquivo.DetectScenes();
+                await analizadorArquivo.DetectScenes( numberLabels, minConfidence);
                // detectLabelsResponse = analizadorArquivo.getListlabelObjectsCategories();
                 await desenharAnalise();
             }
