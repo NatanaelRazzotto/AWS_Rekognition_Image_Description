@@ -6,6 +6,7 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using AWS_Rekognition_Objects.Helpers.Controller;
+using AWS_Rekognition_Objects.Helpers.Model.Entitys;
 using AWS_Rekognition_Objects.Helpers.View;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Image = Amazon.Rekognition.Model.Image;
 using Label = Amazon.Rekognition.Model.Label;
+using Point = System.Drawing.Point;
 
 namespace AWS_Rekognition_Objects
 {
@@ -34,9 +36,27 @@ namespace AWS_Rekognition_Objects
         private void Form1_Load(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
+            btnLimparCategorias.Enabled = false;
+            btnRestart.Enabled = false;
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            btnAnalizarImage.Enabled = false;
+            btnLimparCategorias.Enabled = false;
+            btnRestart.Enabled = false;
+            Application.Restart();
+        }
+        private void btnLimparCategorias_Click(object sender, EventArgs e)
+        {
+            btnAnalizarImage.Enabled = false;
+            btnLimparCategorias.Enabled = false;
+            btnRestart.Enabled = false;
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
+            pictureBoxImage.Image = controller.RestartCategory().imageAnalizeBitmap;
 
+        }
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
         {
@@ -47,9 +67,10 @@ namespace AWS_Rekognition_Objects
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 controller = new Controller(this);
-                // string fileName = controller.definirArquivoImage(openFileDialog1.FileName);
                 pictureBoxImage.Load(controller.definirArquivoImage(openFileDialog1.FileName));
+                lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
+
             }
 
         }
@@ -63,12 +84,14 @@ namespace AWS_Rekognition_Objects
                 {
                     controller.analizarImagens(pictureBoxImage.Image.Width, pictureBoxImage.Image.Height);
                     rtbRetornoProcesso.Clear();
-                    rtbRetornoProcesso.AppendText("Crecenciais Obtidas com Sucesso");
+                    rtbRetornoProcesso.AppendText("Dados Obtidas com Sucesso");
+                    btnLimparCategorias.Enabled = true;
+                    btnRestart.Enabled = true;
                 }
                 else
                 {
                     rtbRetornoProcesso.Clear();
-                    rtbRetornoProcesso.AppendText("Crecenciais NÃO obtidas com sucesso");
+                    rtbRetornoProcesso.AppendText("Dados NÃO obtidas com sucesso");
                 }
 
                 // await DetectScenes(controller.obtemNomeArquivo());
@@ -80,19 +103,19 @@ namespace AWS_Rekognition_Objects
             }
         }
 
-        public void desenharAnalise(List<Label> detectLabels)
+        public void desenharAnalise(List<Label> detectLabels, FileImage file)
         {
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
             foreach (Label label in detectLabels)
-            {
-                foreach (Instance instance in label.Instances)
                 {
-                    rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
-                    Pen pen = new Pen(Color.Red);
-                    Graphics graphics = pictureBoxImage.CreateGraphics();
-                    graphics.DrawRectangle(pen, instance.BoundingBox.Left, instance.BoundingBox.Top,
-                                           instance.BoundingBox.Width, instance.BoundingBox.Height);
+                    foreach (Instance instance in label.Instances)
+                    {
+                        rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
+                    }
                 }
-            }
+            pictureBoxImage.Image = file.imageAnalizeBitmap;
+
         }
         [Obsolete("Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas" +
                    "Verificar o uso de uma estrutura desse modo ao invez de usar um objeto de forma crua")]
@@ -154,10 +177,21 @@ namespace AWS_Rekognition_Objects
 
         private void btnSelection_Click(object sender, EventArgs e)
         {
-            controller.FilterViewByCategorybyInstances(1);
-            //TODO: evento acionando que tera o mesmo comportamento do button TreeView
-            //Quando pronto usar esse para popular os campos subsequentes....
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
+            //Passa o valor do Index da lista
+            FileImage InstancesCategory = controller.FilterViewByCategorybyInstances(2);
+            pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
 
+        }
+
+        private void btnItemIndividual_Click(object sender, EventArgs e)
+        {
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
+            //Passa o valor do Index da lista
+            FileImage InstancesCategory = controller.FilterViewByCategoryItem(2,2);
+            pictureBoxImage.Image = InstancesCategory.imagesBitmap;
         }
     }
 }

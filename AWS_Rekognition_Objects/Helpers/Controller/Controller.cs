@@ -14,8 +14,17 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         AnaliserLabelsAWS analizadorArquivo;
         FileImage fileImage;
         Form1 formPrincipal;
+        PostProcessingImages processingImages;
         public Controller(Form1 formPrincipal) {
             this.formPrincipal = formPrincipal;
+            this.processingImages = new PostProcessingImages();
+        }
+
+        public FileImage RestartCategory()
+        {
+            fileImage.imagesBitmap = null;
+            fileImage.imagesOfCategoryBitmap = null;
+            return fileImage;
         }
 
         public string definirArquivoImage(String nameFile) {
@@ -42,8 +51,7 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
             return fileImage.nameFile;
         }
         public async void analizarImagens(int pictureWidth, int pictureHeight) {
-           analizadorArquivo.DefinirDimensoesPicture(pictureWidth, pictureHeight);
-           bool inclusao = await analizadorArquivo.UploadImageFromS3();
+            bool inclusao = await analizadorArquivo.UploadImageFromS3();
             if (inclusao)
             {
                 await analizadorArquivo.DetectScenes();
@@ -53,7 +61,8 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         }
         private async Task desenharAnalise()//DetectLabelsResponse detectLabelsResponse
         {
-            formPrincipal.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories());
+            fileImage = processingImages.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
+            formPrincipal.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
             //formPrincipal.convertResponseInObjectcategory(detectLabelsResponse.Labels);
         }
         //[Obsolete("Metodo de teste não incluido na versão final.")]
@@ -70,12 +79,20 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         public Label FilterViewByCategory(int IndexCategory)
         {
             List<Label> labelsDetecteds = analizadorArquivo.getListlabelObjectsCategories();
-            return labelsDetecteds[IndexCategory];
+            return labelsDetecteds.ElementAt(IndexCategory);
         }
-        public List<Instance> FilterViewByCategorybyInstances(int IndexCategory)
+        public FileImage FilterViewByCategorybyInstances(int IndexCategory)
         {
-            List<Instance> labelsDetecteds = FilterViewByCategory(IndexCategory).Instances;
-            return labelsDetecteds;
+            fileImage = processingImages.filtrarPorCategoria(FilterViewByCategory(IndexCategory).Instances, fileImage);
+            return fileImage;
+        }
+        public FileImage FilterViewByCategoryItem(int IndexCategory,int IndexItem)
+        {
+            List<Instance> CategoryFilter = FilterViewByCategory(IndexCategory).Instances;
+            fileImage = processingImages.filtrarPorCategoria(CategoryFilter, fileImage);
+            Instance instance = CategoryFilter.ElementAt(IndexItem);
+            fileImage = processingImages.filtrarPorInstance(instance, fileImage);
+            return fileImage;
         }
     }
 }

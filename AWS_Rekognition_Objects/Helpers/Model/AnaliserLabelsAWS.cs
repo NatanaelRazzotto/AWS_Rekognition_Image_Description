@@ -30,12 +30,14 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         //private string fileName;
         private FileImage file;
 
+        [Obsolete("Atributo substituido pelos atributos de (FileIamge)")]
         private int pictureWidth, pictureHeight;
 
         private List<Label> ListlabelObjectsCategories;
         public AnaliserLabelsAWS(FileImage file) {
             this.file = file;
         }
+        [Obsolete("Metodo substituido pelos atributos de (FileIamge)")]
         public void DefinirDimensoesPicture(int pictureWidth, int pictureHeight) {
             this.pictureWidth = pictureWidth;
             this.pictureHeight = pictureHeight;
@@ -122,10 +124,10 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             {
                 foreach (Instance itemLabel in item.Instances)
                 {
-                    itemLabel.BoundingBox.Left = itemLabel.BoundingBox.Left * pictureWidth;
-                    itemLabel.BoundingBox.Top = itemLabel.BoundingBox.Top * pictureHeight;
-                    itemLabel.BoundingBox.Width = itemLabel.BoundingBox.Width * pictureWidth;
-                    itemLabel.BoundingBox.Height = itemLabel.BoundingBox.Height * pictureHeight;
+                    itemLabel.BoundingBox.Left = itemLabel.BoundingBox.Left * file.image.Width;
+                    itemLabel.BoundingBox.Top = itemLabel.BoundingBox.Top * file.image.Height;
+                    itemLabel.BoundingBox.Width = itemLabel.BoundingBox.Width * file.image.Width;
+                    itemLabel.BoundingBox.Height = itemLabel.BoundingBox.Height * file.image.Height;
                 }
             }
             return labelObjects;

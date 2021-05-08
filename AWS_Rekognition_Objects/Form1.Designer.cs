@@ -30,30 +30,43 @@ namespace AWS_Rekognition_Objects
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnRestart = new System.Windows.Forms.Button();
+            this.btnLimparCategorias = new System.Windows.Forms.Button();
             this.btnAnalizarImage = new System.Windows.Forms.Button();
             this.btnImageBrowse = new System.Windows.Forms.Button();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBoxImage = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.btnSelection = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.pbImageZoom = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.treeViewLabels = new System.Windows.Forms.TreeView();
             this.label1 = new System.Windows.Forms.Label();
             this.lblNomeArquivo = new System.Windows.Forms.Label();
             this.rtbRetornoProcesso = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnSelection = new System.Windows.Forms.Button();
+            this.btnItemIndividual = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbImageZoom)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.panel1.Controls.Add(this.btnRestart);
+            this.panel1.Controls.Add(this.btnLimparCategorias);
             this.panel1.Controls.Add(this.btnAnalizarImage);
             this.panel1.Controls.Add(this.btnImageBrowse);
             this.panel1.Controls.Add(this.lblTitulo);
@@ -62,6 +75,36 @@ namespace AWS_Rekognition_Objects
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1305, 68);
             this.panel1.TabIndex = 1;
+            // 
+            // btnRestart
+            // 
+            this.btnRestart.BackColor = System.Drawing.Color.Black;
+            this.btnRestart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnRestart.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRestart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRestart.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.btnRestart.Location = new System.Drawing.Point(709, 25);
+            this.btnRestart.Name = "btnRestart";
+            this.btnRestart.Size = new System.Drawing.Size(124, 23);
+            this.btnRestart.TabIndex = 10;
+            this.btnRestart.Text = "Restart";
+            this.btnRestart.UseVisualStyleBackColor = false;
+            this.btnRestart.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // btnLimparCategorias
+            // 
+            this.btnLimparCategorias.BackColor = System.Drawing.Color.Black;
+            this.btnLimparCategorias.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnLimparCategorias.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLimparCategorias.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimparCategorias.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.btnLimparCategorias.Location = new System.Drawing.Point(839, 25);
+            this.btnLimparCategorias.Name = "btnLimparCategorias";
+            this.btnLimparCategorias.Size = new System.Drawing.Size(124, 23);
+            this.btnLimparCategorias.TabIndex = 9;
+            this.btnLimparCategorias.Text = "Limpar Categorias";
+            this.btnLimparCategorias.UseVisualStyleBackColor = false;
+            this.btnLimparCategorias.Click += new System.EventHandler(this.btnLimparCategorias_Click);
             // 
             // btnAnalizarImage
             // 
@@ -112,7 +155,7 @@ namespace AWS_Rekognition_Objects
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 68);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1305, 382);
+            this.panel2.Size = new System.Drawing.Size(1305, 509);
             this.panel2.TabIndex = 2;
             // 
             // pictureBoxImage
@@ -121,7 +164,7 @@ namespace AWS_Rekognition_Objects
             | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBoxImage.Location = new System.Drawing.Point(12, 12);
             this.pictureBoxImage.Name = "pictureBoxImage";
-            this.pictureBoxImage.Size = new System.Drawing.Size(811, 367);
+            this.pictureBoxImage.Size = new System.Drawing.Size(811, 494);
             this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxImage.TabIndex = 0;
             this.pictureBoxImage.TabStop = false;
@@ -129,9 +172,16 @@ namespace AWS_Rekognition_Objects
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.panel3.Controls.Add(this.btnItemIndividual);
+            this.panel3.Controls.Add(this.richTextBox1);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.label5);
+            this.panel3.Controls.Add(this.numericUpDown3);
+            this.panel3.Controls.Add(this.numericUpDown1);
             this.panel3.Controls.Add(this.btnSelection);
             this.panel3.Controls.Add(this.label2);
-            this.panel3.Controls.Add(this.pbImageZoom);
+            this.panel3.Controls.Add(this.pictureBox1);
             this.panel3.Controls.Add(this.treeViewLabels);
             this.panel3.Controls.Add(this.label1);
             this.panel3.Controls.Add(this.lblNomeArquivo);
@@ -139,34 +189,97 @@ namespace AWS_Rekognition_Objects
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel3.Location = new System.Drawing.Point(829, 68);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(476, 382);
+            this.panel3.Size = new System.Drawing.Size(476, 509);
             this.panel3.TabIndex = 3;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(10, 460);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(454, 37);
+            this.richTextBox1.TabIndex = 16;
+            this.richTextBox1.Text = "";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label4.Location = new System.Drawing.Point(10, 435);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 20);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "Tag Gerada";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.label3.Location = new System.Drawing.Point(88, 69);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(103, 15);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Numero de Labels";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.label5.Location = new System.Drawing.Point(293, 69);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(129, 15);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Minimo de Confidence";
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Location = new System.Drawing.Point(286, 87);
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(136, 23);
+            this.numericUpDown3.TabIndex = 12;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(71, 87);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(131, 23);
+            this.numericUpDown1.TabIndex = 8;
+            // 
+            // btnSelection
+            // 
+            this.btnSelection.Location = new System.Drawing.Point(10, 126);
+            this.btnSelection.Name = "btnSelection";
+            this.btnSelection.Size = new System.Drawing.Size(107, 23);
+            this.btnSelection.TabIndex = 7;
+            this.btnSelection.Text = "SelecionarCateg";
+            this.btnSelection.UseVisualStyleBackColor = true;
+            this.btnSelection.Click += new System.EventHandler(this.btnSelection_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(239, 76);
+            this.label2.Location = new System.Drawing.Point(239, 129);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(107, 20);
             this.label2.TabIndex = 6;
             this.label2.Text = "Lista de Labels \r\n";
             // 
-            // pbImageZoom
+            // pictureBox1
             // 
-            this.pbImageZoom.BackColor = System.Drawing.Color.Gray;
-            this.pbImageZoom.Location = new System.Drawing.Point(10, 112);
-            this.pbImageZoom.Name = "pbImageZoom";
-            this.pbImageZoom.Size = new System.Drawing.Size(223, 160);
-            this.pbImageZoom.TabIndex = 5;
-            this.pbImageZoom.TabStop = false;
+            this.pictureBox1.BackColor = System.Drawing.Color.Gray;
+            this.pictureBox1.Location = new System.Drawing.Point(10, 165);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(223, 160);
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
             // 
             // treeViewLabels
             // 
             this.treeViewLabels.BackColor = System.Drawing.Color.Gray;
             this.treeViewLabels.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.treeViewLabels.Location = new System.Drawing.Point(239, 112);
+            this.treeViewLabels.Location = new System.Drawing.Point(239, 165);
             this.treeViewLabels.Name = "treeViewLabels";
             this.treeViewLabels.Size = new System.Drawing.Size(225, 267);
             this.treeViewLabels.TabIndex = 1;
@@ -198,7 +311,7 @@ namespace AWS_Rekognition_Objects
             this.rtbRetornoProcesso.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.rtbRetornoProcesso.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rtbRetornoProcesso.ForeColor = System.Drawing.SystemColors.Window;
-            this.rtbRetornoProcesso.Location = new System.Drawing.Point(10, 278);
+            this.rtbRetornoProcesso.Location = new System.Drawing.Point(10, 331);
             this.rtbRetornoProcesso.Name = "rtbRetornoProcesso";
             this.rtbRetornoProcesso.Size = new System.Drawing.Size(223, 101);
             this.rtbRetornoProcesso.TabIndex = 2;
@@ -208,21 +321,21 @@ namespace AWS_Rekognition_Objects
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnSelection
+            // btnItemIndividual
             // 
-            this.btnSelection.Location = new System.Drawing.Point(10, 76);
-            this.btnSelection.Name = "btnSelection";
-            this.btnSelection.Size = new System.Drawing.Size(223, 23);
-            this.btnSelection.TabIndex = 7;
-            this.btnSelection.Text = "SelecionarItem (test)";
-            this.btnSelection.UseVisualStyleBackColor = true;
-            this.btnSelection.Click += new System.EventHandler(this.btnSelection_Click);
+            this.btnItemIndividual.Location = new System.Drawing.Point(132, 126);
+            this.btnItemIndividual.Name = "btnItemIndividual";
+            this.btnItemIndividual.Size = new System.Drawing.Size(101, 23);
+            this.btnItemIndividual.TabIndex = 17;
+            this.btnItemIndividual.Text = "SelecionarItem (test)";
+            this.btnItemIndividual.UseVisualStyleBackColor = true;
+            this.btnItemIndividual.Click += new System.EventHandler(this.btnItemIndividual_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1305, 450);
+            this.ClientSize = new System.Drawing.Size(1305, 577);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -236,7 +349,9 @@ namespace AWS_Rekognition_Objects
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbImageZoom)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -253,11 +368,20 @@ namespace AWS_Rekognition_Objects
         private System.Windows.Forms.Label lblNomeArquivo;
         private System.Windows.Forms.PictureBox pictureBoxImage;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox pbImageZoom;
         private System.Windows.Forms.TreeView treeViewLabels;
         private System.Windows.Forms.Button btnImageBrowse;
         private System.Windows.Forms.Button btnAnalizarImage;
         private System.Windows.Forms.Button btnSelection;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button btnRestart;
+        private System.Windows.Forms.Button btnLimparCategorias;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnItemIndividual;
     }
 }
 
