@@ -14,6 +14,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
         private Bitmap _imagesOfCategoryBitmap;
         private Bitmap _imageAnalizeBitmap;
         private Bitmap _imagesBitmap;
+        private Bitmap _imageZoom;
         public string nameFile
         {
             get => _nameFile;
@@ -39,9 +40,15 @@ namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
             get => _imagesBitmap;
             set => _imagesBitmap = value;
         }
+        public Bitmap imageZoom
+        {
+            get => _imageZoom;
+            set => _imageZoom = value;
+        }
 
         public FileImage()
-        { 
+        {
+
         }
         public FileImage(String _nameFile) {
             this._nameFile = _nameFile;
@@ -50,10 +57,13 @@ namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
             this._imagesOfCategoryBitmap = new Bitmap(_nameFile);
             this._imagesBitmap = new Bitmap(_nameFile);
         }
-
+        [Obsolete]
         public object Clone()
         {
             FileImage fileImage = (FileImage)this.MemberwiseClone();
+            fileImage.imageAnalizeBitmap = (Bitmap)this.imageAnalizeBitmap.Clone();
+            fileImage._imagesOfCategoryBitmap = (Bitmap)this._imagesOfCategoryBitmap.Clone();
+            fileImage._imagesBitmap = (Bitmap)this._imagesBitmap.Clone();
             return fileImage;
 
         }

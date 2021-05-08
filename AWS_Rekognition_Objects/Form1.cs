@@ -50,12 +50,12 @@ namespace AWS_Rekognition_Objects
         private void btnLimparCategorias_Click(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
-            btnLimparCategorias.Enabled = false;
-            btnRestart.Enabled = false;
+           // btnLimparCategorias.Enabled = false;
+           // btnRestart.Enabled = false;
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
             pictureBoxImage.Image = controller.RestartCategory().imageAnalizeBitmap;
-
+            pictureBox1.Image = null;
         }
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
@@ -71,6 +71,14 @@ namespace AWS_Rekognition_Objects
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
 
+              /*  Bitmap imageAnalizeBitmap = new Bitmap(openFileDialog1.FileName);
+                Bitmap b = new Bitmap(imageAnalizeBitmap);
+                Graphics graphics = Graphics.FromImage(b);
+                Pen pen = new Pen(Color.Aqua, 2);
+                graphics.DrawRectangle(pen, pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50,
+                                           pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50);
+
+                pictureBoxImage.Image = imageAnalizeBitmap;*/
             }
 
         }
@@ -189,9 +197,12 @@ namespace AWS_Rekognition_Objects
         {
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
+            //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            //pictureBox1.Location = new Point(0, 0);
             //Passa o valor do Index da lista
             FileImage InstancesCategory = controller.FilterViewByCategoryItem(2,2);
             pictureBoxImage.Image = InstancesCategory.imagesBitmap;
+            pictureBox1.Image = InstancesCategory.imageZoom;
         }
     }
 }

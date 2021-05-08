@@ -24,6 +24,8 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         {
             fileImage.imagesBitmap = null;
             fileImage.imagesOfCategoryBitmap = null;
+            fileImage.imageZoom = null;
+
             return fileImage;
         }
 
@@ -92,6 +94,8 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
             fileImage = processingImages.filtrarPorCategoria(CategoryFilter, fileImage);
             Instance instance = CategoryFilter.ElementAt(IndexItem);
             fileImage = processingImages.filtrarPorInstance(instance, fileImage);
+            fileImage = processingImages.zoomImage(instance, fileImage);
+
             return fileImage;
         }
     }

@@ -38,6 +38,7 @@ namespace AWS_Rekognition_Objects
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBoxImage = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnItemIndividual = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -52,7 +53,6 @@ namespace AWS_Rekognition_Objects
             this.lblNomeArquivo = new System.Windows.Forms.Label();
             this.rtbRetornoProcesso = new System.Windows.Forms.RichTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnItemIndividual = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
@@ -192,6 +192,16 @@ namespace AWS_Rekognition_Objects
             this.panel3.Size = new System.Drawing.Size(476, 509);
             this.panel3.TabIndex = 3;
             // 
+            // btnItemIndividual
+            // 
+            this.btnItemIndividual.Location = new System.Drawing.Point(132, 126);
+            this.btnItemIndividual.Name = "btnItemIndividual";
+            this.btnItemIndividual.Size = new System.Drawing.Size(101, 23);
+            this.btnItemIndividual.TabIndex = 17;
+            this.btnItemIndividual.Text = "SelecionarItem (test)";
+            this.btnItemIndividual.UseVisualStyleBackColor = true;
+            this.btnItemIndividual.Click += new System.EventHandler(this.btnItemIndividual_Click);
+            // 
             // richTextBox1
             // 
             this.richTextBox1.Location = new System.Drawing.Point(10, 460);
@@ -272,6 +282,7 @@ namespace AWS_Rekognition_Objects
             this.pictureBox1.Location = new System.Drawing.Point(10, 165);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(223, 160);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             // 
@@ -320,16 +331,6 @@ namespace AWS_Rekognition_Objects
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // btnItemIndividual
-            // 
-            this.btnItemIndividual.Location = new System.Drawing.Point(132, 126);
-            this.btnItemIndividual.Name = "btnItemIndividual";
-            this.btnItemIndividual.Size = new System.Drawing.Size(101, 23);
-            this.btnItemIndividual.TabIndex = 17;
-            this.btnItemIndividual.Text = "SelecionarItem (test)";
-            this.btnItemIndividual.UseVisualStyleBackColor = true;
-            this.btnItemIndividual.Click += new System.EventHandler(this.btnItemIndividual_Click);
             // 
             // Form1
             // 
