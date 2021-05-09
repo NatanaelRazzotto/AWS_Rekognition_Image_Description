@@ -10,17 +10,20 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 {
     public class LogRegister
     {
-        public LogRegister() { 
-        
-        }
-
+        /*   (Arquivo se encontra em BIN/DEBUG/.../ArquivoDeLog)
+         
+         *EXEMPLO DE TRECHO PARA ADICIONAR O LOG*
+            
+            LogRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoDeLog");
+            LogRegister.Log("Texto que deseja ser apresentado ao log");
+         */
         private static string pathExe = string.Empty;
-        public bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
+        public static bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
         {
             try
             {
                 pathExe = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string pathFile = Path.Combine(pathExe, strNameFile);
+                string pathFile = Path.Combine(pathExe, strNameFile + ".txt");
                 if (!File.Exists(pathFile))
                 {
                     FileStream arquivo = File.Create(pathFile);
@@ -41,11 +44,9 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         {
             try
             {
-                txtWriter.Write("\r\nLog Entrada : ");
-                txtWriter.WriteLine($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-                txtWriter.WriteLine("  :");
-                txtWriter.WriteLine($"  :{logMessage}");
-                txtWriter.WriteLine("------------------------------------");
+                txtWriter.Write("\r\nLog: ");
+                txtWriter.Write($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
+                txtWriter.Write($"  :{logMessage}");
             }
             catch (Exception ex)
             {
