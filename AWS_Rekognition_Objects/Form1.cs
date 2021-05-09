@@ -50,8 +50,8 @@ namespace AWS_Rekognition_Objects
         private void btnLimparCategorias_Click(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
-           // btnLimparCategorias.Enabled = false;
-           // btnRestart.Enabled = false;
+            // btnLimparCategorias.Enabled = false;
+            // btnRestart.Enabled = false;
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
             pictureBoxImage.Image = controller.RestartCategory().imageAnalizeBitmap;
@@ -71,14 +71,14 @@ namespace AWS_Rekognition_Objects
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
 
-              /*  Bitmap imageAnalizeBitmap = new Bitmap(openFileDialog1.FileName);
-                Bitmap b = new Bitmap(imageAnalizeBitmap);
-                Graphics graphics = Graphics.FromImage(b);
-                Pen pen = new Pen(Color.Aqua, 2);
-                graphics.DrawRectangle(pen, pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50,
-                                           pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50);
+                /*  Bitmap imageAnalizeBitmap = new Bitmap(openFileDialog1.FileName);
+                  Bitmap b = new Bitmap(imageAnalizeBitmap);
+                  Graphics graphics = Graphics.FromImage(b);
+                  Pen pen = new Pen(Color.Aqua, 2);
+                  graphics.DrawRectangle(pen, pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50,
+                                             pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50);
 
-                pictureBoxImage.Image = imageAnalizeBitmap;*/
+                  pictureBoxImage.Image = imageAnalizeBitmap;*/
             }
 
         }
@@ -102,6 +102,7 @@ namespace AWS_Rekognition_Objects
                             rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
                             btnLimparCategorias.Enabled = true;
                             btnRestart.Enabled = true;
+
                         }
                     }
                     else
@@ -111,8 +112,8 @@ namespace AWS_Rekognition_Objects
                         rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
                         btnLimparCategorias.Enabled = true;
                         btnRestart.Enabled = true;
-                    }
 
+                    }
                 }
                 else
                 {
@@ -134,12 +135,12 @@ namespace AWS_Rekognition_Objects
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
             foreach (Label label in detectLabels)
+            {
+                foreach (Instance instance in label.Instances)
                 {
-                    foreach (Instance instance in label.Instances)
-                    {
-                        rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
-                    }
+                    rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
                 }
+            }
             pictureBoxImage.Image = file.imageAnalizeBitmap;
 
         }
@@ -162,7 +163,7 @@ namespace AWS_Rekognition_Objects
                     listRectangleF[i] = rectangle;
                 }
                 graphics.DrawRectangles(pen, listRectangleF);
-                     //graphics.DrawRectangle(pen, rectangle);                
+                //graphics.DrawRectangle(pen, rectangle);                
 
             }
         }
@@ -179,7 +180,7 @@ namespace AWS_Rekognition_Objects
 
         private void pictureBoxImage_MouseUp(object sender, MouseEventArgs e)
         {
-            double coordinateX = e.X ;
+            double coordinateX = e.X;
             int coordinateY = e.Y;
             List<Label> detectLabels = controller.getDetectLabelsResponse();
             foreach (Label itemLabel in detectLabels)
@@ -192,13 +193,14 @@ namespace AWS_Rekognition_Objects
                     double coordenadaVertiI = item.BoundingBox.Top * pictureBoxImage.Image.Height;
 
                     if ((coordinateX <= coordenadaHorizI) && (coordinateX >= coordenadaHorizF) &&
-                        (coordinateY <= coordenadaVertiI) && (coordinateY >= coordenadaVertiF)) {
+                        (coordinateY <= coordenadaVertiI) && (coordinateY >= coordenadaVertiF))
+                    {
                         rtbRetornoProcesso.AppendText($" x = {itemLabel.Name}");
                         rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
                     }
                 }
             }
-           // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
+            // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
         }
 
         private void btnSelection_Click(object sender, EventArgs e)
@@ -218,9 +220,36 @@ namespace AWS_Rekognition_Objects
             //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             //pictureBox1.Location = new Point(0, 0);
             //Passa o valor do Index da lista
-            FileImage InstancesCategory = controller.FilterViewByCategoryItem(2,2);
+            FileImage InstancesCategory = controller.FilterViewByCategoryItem(2, 2);
             pictureBoxImage.Image = InstancesCategory.imagesBitmap;
             pictureBox1.Image = InstancesCategory.imageZoom;
+        }
+
+        public void gerarTreeView()
+        {
+            List<Label> labelsCarregadas = controller.getDetectLabelsResponse();
+
+            for (int i = 0; i < labelsCarregadas.Count - 1; i++)
+            {
+                var label = labelsCarregadas[i];
+                var nome = label.Name;
+                var confidence = label.Confidence.ToString();
+                //var categorias = label.Parents;
+                var categorias = label.Instances; 
+
+                TreeNode nodeNome = treeViewLabels.Nodes.Add(nome);
+                nodeNome.Nodes.Add(confidence);
+
+                if (categorias.Count == 0)
+                {
+                    for (int j = 0; j < categorias.Count - 1; i++)
+                    {
+                        //var categoria = categorias[j].Name;
+                        var categoria = categorias[j];
+                      //  nodeNome.Nodes.Add(categoria);
+                    }
+                }
+            }
         }
     }
 }

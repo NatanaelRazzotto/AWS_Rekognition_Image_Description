@@ -59,6 +59,8 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
                 await analizadorArquivo.DetectScenes( numberLabels, minConfidence);
                // detectLabelsResponse = analizadorArquivo.getListlabelObjectsCategories();
                 await desenharAnalise();
+
+                formPrincipal.gerarTreeView();
             }
         }
         private async Task desenharAnalise()//DetectLabelsResponse detectLabelsResponse
