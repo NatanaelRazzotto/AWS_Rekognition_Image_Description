@@ -6,6 +6,7 @@ using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using AWS_Rekognition_Objects.Helpers.Controller;
+using AWS_Rekognition_Objects.Helpers.Model;
 using AWS_Rekognition_Objects.Helpers.Model.Entitys;
 using AWS_Rekognition_Objects.Helpers.View;
 using System;
@@ -70,6 +71,10 @@ namespace AWS_Rekognition_Objects
                 pictureBoxImage.Load(controller.definirArquivoImage(openFileDialog1.FileName));
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
+
+                LogRegister logRegister = new LogRegister();
+                logRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                logRegister.Log("Teste de execução");
 
                 /*  Bitmap imageAnalizeBitmap = new Bitmap(openFileDialog1.FileName);
                   Bitmap b = new Bitmap(imageAnalizeBitmap);
@@ -238,15 +243,20 @@ namespace AWS_Rekognition_Objects
                 var categorias = label.Instances; 
 
                 TreeNode nodeNome = treeViewLabels.Nodes.Add(nome);
-                nodeNome.Nodes.Add(confidence);
+                nodeNome.Nodes.Add($" Confidence : {confidence}%");
 
-                if (categorias.Count == 0)
+                if (categorias.Count != 0)
                 {
-                    for (int j = 0; j < categorias.Count - 1; i++)
+
+                    for (int j = 0; j < categorias.Count - 1; j++)
                     {
                         //var categoria = categorias[j].Name;
                         var categoria = categorias[j];
-                      //  nodeNome.Nodes.Add(categoria);
+                        TreeNode treeNodeChild1 = nodeNome.Nodes.Add($"{nome} - {j}");
+                        treeNodeChild1.Tag = categoria;
+
+                        var cat = (Instance)treeNodeChild1.Tag;
+                        //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
                     }
                 }
             }

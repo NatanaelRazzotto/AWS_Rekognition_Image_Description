@@ -8,10 +8,14 @@ using System.Reflection;
 
 namespace AWS_Rekognition_Objects.Helpers.Model
 {
-    class LogRegister
+    public class LogRegister
     {
+        public LogRegister() { 
+        
+        }
+
         private static string pathExe = string.Empty;
-        public static bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
+        public bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
         {
             try
             {
