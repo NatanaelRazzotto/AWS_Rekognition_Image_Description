@@ -14,7 +14,6 @@ namespace AWS_Rekognition_Objects.Helpers.Model
          
          *EXEMPLO DE TRECHO PARA ADICIONAR O LOG*
             
-            LogRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoDeLog");
             LogRegister.Log("Texto que deseja ser apresentado ao log");
          */
         private static string pathExe = string.Empty;
