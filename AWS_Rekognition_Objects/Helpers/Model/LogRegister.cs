@@ -17,7 +17,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             LogRegister.Log("Texto que deseja ser apresentado ao log");
          */
         private static string pathExe = string.Empty;
-        public static bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
+        public bool Log(string strMessage, string strNameFile = "ArquivoDeLog")
         {
             try
             {
