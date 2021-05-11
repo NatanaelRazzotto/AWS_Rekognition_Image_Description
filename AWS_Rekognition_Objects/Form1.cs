@@ -1,25 +1,13 @@
-﻿using Amazon;
-using Amazon.Rekognition;
-using Amazon.Rekognition.Model;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-using Amazon.S3;
-using Amazon.S3.Transfer;
+﻿using Amazon.Rekognition.Model;
 using AWS_Rekognition_Objects.Helpers;
 using AWS_Rekognition_Objects.Helpers.Controller;
 using AWS_Rekognition_Objects.Helpers.Model;
 using AWS_Rekognition_Objects.Helpers.Model.Entitys;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Image = Amazon.Rekognition.Model.Image;
 using Label = Amazon.Rekognition.Model.Label;
 using Point = System.Drawing.Point;
 
@@ -41,7 +29,7 @@ namespace AWS_Rekognition_Objects
             btnRestart.Enabled = false;
             logRegister = new LogRegister();
         }
-
+        #region Reset
         private void button2_Click(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
@@ -57,13 +45,13 @@ namespace AWS_Rekognition_Objects
             pictureBoxImage.Image = controller.ResetCategory().imageAnalizeBitmap;
             pictureBox1.Image = null;
             rtbRetornoProcesso.Clear();
-            rtbTAG.Clear();
         }
         public void releaseNumericsUpDown(bool defined) {
             nudConfidence.Enabled = true;
             nudNumLabels.Enabled = true;
         }
-
+        #endregion
+        #region Events
         private void btnImageBrowse_Click(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
@@ -73,7 +61,7 @@ namespace AWS_Rekognition_Objects
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 controller = new Controller(this);
-                pictureBoxImage.Load(controller.setFileImage(openFileDialog1.FileName));
+                pictureBoxImage.Load(controller.SetFileImage(openFileDialog1.FileName));
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
                 nudConfidence.Enabled = true;
@@ -94,12 +82,11 @@ namespace AWS_Rekognition_Objects
         {
             try
             {
-                if (controller.checkArchive())
+                if (controller.CheckArchive())
                 {
                     bool getCrendentials = await controller.ValidateOperation();
                     if (getCrendentials)
                     {
-
                         int numbLabels = Convert.ToInt32(nudNumLabels.Value);
                         float confidence = (float) Convert.ToDouble(nudConfidence.Value);
                         if ((numbLabels == 0) && (confidence == 0))
@@ -153,151 +140,6 @@ namespace AWS_Rekognition_Objects
                 MensagemErro("ERRO", ex.Message);
             }
         }
-        public void ConstructTAG(List<string> labelsResponse)
-        {
-            rtbTAG.Clear();
-            rtbTAG.SelectionAlignment = HorizontalAlignment.Center;
-            rtbTAG.ForeColor = Color.Black;
-
-            String Tag = "";
-            foreach (string label in labelsResponse)
-            {
-                if (String.IsNullOrEmpty(Tag))
-                {
-                    Tag = label;
-                }
-                else
-                {
-                    Tag = ($"{Tag} , {label} ");
-                }
-            }
-
-            rtbTAG.AppendText(Tag + ",");
-            logRegister.Log("Geração da TAG concluida");
-        }
-
-        public void drawAnalyze(List<Label> detectLabels, FileImage file)
-        {
-            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBoxImage.Location = new Point(0, 0);
-            rtbRetornoProcesso.AppendText(Environment.NewLine);
-            foreach (Label label in detectLabels)
-            {
-                if (label.Instances.Count > 0)
-                {
-                    rtbRetornoProcesso.AppendText($" -Foram encontrados {label.Instances.Count} objetos da categoria {label.Name}; {Environment.NewLine} ");
-                }
-
-            }
-            rtbRetornoProcesso.AppendText("Análise Concluida");
-            pictureBoxImage.Image = file.imageAnalizeBitmap;
-            logRegister.Log("Desenho das labels concluida");
-
-        }
-        [Obsolete("Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas" +
-                   "Verificar o uso de uma estrutura desse modo ao invez de usar um objeto de forma crua")]
-        public void convertResponseInObjectcategory(List<Label> labelObjects)
-        {
-            foreach (Label item in labelObjects)
-            {
-                Graphics graphics = pictureBoxImage.CreateGraphics();
-                Pen pen = new Pen(Color.Red);
-                RectangleF[] listRectangleF = new RectangleF[labelObjects.Count];
-                for (int i = 0; i < item.Instances.Count; i++)
-                {
-                    Instance itemLabel = item.Instances[i];
-                    RectangleF rectangle = new RectangleF(itemLabel.BoundingBox.Left * pictureBoxImage.Image.Width,
-                                                          itemLabel.BoundingBox.Top * pictureBoxImage.Image.Height,
-                                                          itemLabel.BoundingBox.Width * pictureBoxImage.Image.Width,
-                                                          itemLabel.BoundingBox.Height * pictureBoxImage.Image.Height);
-                    listRectangleF[i] = rectangle;
-                }
-                graphics.DrawRectangles(pen, listRectangleF);
-                //graphics.DrawRectangle(pen, rectangle);                
-
-            }
-        }
-
-        private void pictureBoxImage_MouseUp(object sender, MouseEventArgs e)
-        {
-            double coordinateX = e.X;
-            int coordinateY = e.Y;
-            List<Label> detectLabels = controller.getDetectLabelsResponse();
-            foreach (Label itemLabel in detectLabels)
-            {
-                foreach (Instance item in itemLabel.Instances)
-                {
-                    double coordenadaHorizI = item.BoundingBox.Left * pictureBoxImage.Image.Width;
-                    double coordenadaHorizF = item.BoundingBox.Width * pictureBoxImage.Image.Width;
-                    double coordenadaVertiF = item.BoundingBox.Height * pictureBoxImage.Image.Height;
-                    double coordenadaVertiI = item.BoundingBox.Top * pictureBoxImage.Image.Height;
-
-                    if ((coordinateX <= coordenadaHorizI) && (coordinateX >= coordenadaHorizF) &&
-                        (coordinateY <= coordenadaVertiI) && (coordinateY >= coordenadaVertiF))
-                    {
-                        rtbRetornoProcesso.AppendText($" x = {itemLabel.Name}");
-                        rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
-                    }
-                }
-            }
-            // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
-        }
-        [Obsolete]
-        private void btnSelection_Click(object sender, EventArgs e)
-        {
-            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBoxImage.Location = new Point(0, 0);
-            //Passa o valor do Index da lista
-            FileImage InstancesCategory = controller.FilterViewByCategorybyInstances(2);
-            pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
-
-        }
-        [Obsolete]
-        private void btnItemIndividual_Click(object sender, EventArgs e)
-        {
-            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBoxImage.Location = new Point(0, 0);
-            FileImage InstancesCategory = controller.FilterViewByCategoryItem(2, 2);
-            pictureBoxImage.Image = InstancesCategory.imagesBitmap;
-            pictureBox1.Image = InstancesCategory.imageZoom;
-        }
-
-        public void generateTreeView()
-        {
-            List<Label> labelsCarregadas = controller.getDetectLabelsResponse();
-
-            foreach (Label item in labelsCarregadas)
-            {
-                DTO_LabelInstance dto_LabelInstance = new DTO_LabelInstance();
-                //dto_LabelInstance.idCategoria = item
-                dto_LabelInstance.NameCategoria = item.Name;
-                dto_LabelInstance.CategoryInstances = item.Instances;
-                dto_LabelInstance.confidence = item.Confidence;
-                dto_LabelInstance.parents = item.Parents;
-
-                TreeNode nodeNome = treeViewLabels.Nodes.Add(item.Name);
-                nodeNome.Tag = dto_LabelInstance;
-                TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
-
-
-                for (int j = 0; j < item.Instances.Count; j++)
-                {
-                    DTO_LabelInstance dto_Instance = new DTO_LabelInstance();
-                    dto_Instance.NameCategoria = item.Name;
-                    dto_Instance.CategoryInstances = item.Instances;
-                    dto_Instance.confidence = item.Confidence;
-                    dto_Instance.parents = item.Parents;
-                    dto_Instance.nameItem = ($"{item.Name}_{j}");
-                    dto_Instance.Instance = item.Instances.ElementAt(j);
-
-                    TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{dto_Instance.nameItem} / Confidence : {dto_Instance.Instance.Confidence}%");
-                    treeNodeChild.Tag = dto_Instance;
-                }
-                
-            }
-            logRegister.Log("Geração de TreeView Concluida");
-
-        }
 
         private void treeViewLabels_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -340,7 +182,7 @@ namespace AWS_Rekognition_Objects
                 {
                     FileImage InstancesCategory = controller.GetFileImage();
                     pictureBoxImage.Image = InstancesCategory.imageAnalizeBitmap;
-                    pictureBox1.Image =null;
+                    pictureBox1.Image = null;
                     rtbRetornoProcesso.Clear();
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Yellow;
@@ -382,6 +224,88 @@ namespace AWS_Rekognition_Objects
                 }
             }
         }
+        #endregion
+        #region Methods
+        public bool ConstructTAG(List<string> labelsResponse)
+        {
+            rtbTAG.Clear();
+            rtbTAG.SelectionAlignment = HorizontalAlignment.Center;
+            rtbTAG.ForeColor = Color.Black;
+
+            String Tag = "";
+            foreach (string label in labelsResponse)
+            {
+                if (String.IsNullOrEmpty(Tag))
+                {
+                    Tag = label;
+                }
+                else
+                {
+                    Tag = ($"{Tag} , {label} ");
+                }
+            }
+
+            rtbTAG.AppendText(Tag + ",");
+            logRegister.Log("Geração da TAG concluida");
+            return true;
+        }
+
+        public bool drawAnalyze(List<Label> detectLabels, FileImage file)
+        {
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
+            rtbRetornoProcesso.AppendText(Environment.NewLine);
+            foreach (Label label in detectLabels)
+            {
+                if (label.Instances.Count > 0)
+                {
+                    rtbRetornoProcesso.AppendText($" -Foram encontrados {label.Instances.Count} objetos da categoria {label.Name}; {Environment.NewLine} ");
+                }
+
+            }
+            rtbRetornoProcesso.AppendText("Análise Concluida");
+            pictureBoxImage.Image = file.imageAnalizeBitmap;
+            logRegister.Log("Desenho das labels concluida");
+            return true;
+
+        }
+        public bool generateTreeView()
+        {
+            List<Label> labelsCarregadas = controller.GetDetectLabelsResponse();
+
+            foreach (Label item in labelsCarregadas)
+            {
+                DTO_LabelInstance dto_LabelInstance = new DTO_LabelInstance();
+                //dto_LabelInstance.idCategoria = item
+                dto_LabelInstance.NameCategoria = item.Name;
+                dto_LabelInstance.CategoryInstances = item.Instances;
+                dto_LabelInstance.confidence = item.Confidence;
+                dto_LabelInstance.parents = item.Parents;
+
+                TreeNode nodeNome = treeViewLabels.Nodes.Add(item.Name);
+                nodeNome.Tag = dto_LabelInstance;
+                TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
+
+
+                for (int j = 0; j < item.Instances.Count; j++)
+                {
+                    DTO_LabelInstance dto_Instance = new DTO_LabelInstance();
+                    dto_Instance.NameCategoria = item.Name;
+                    dto_Instance.CategoryInstances = item.Instances;
+                    dto_Instance.confidence = item.Confidence;
+                    dto_Instance.parents = item.Parents;
+                    dto_Instance.nameItem = ($"{item.Name}_{j}");
+                    dto_Instance.Instance = item.Instances.ElementAt(j);
+
+                    TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{dto_Instance.nameItem} / Confidence : {dto_Instance.Instance.Confidence}%");
+                    treeNodeChild.Tag = dto_Instance;
+                }
+                
+            }
+            logRegister.Log("Geração de TreeView Concluida");
+            return true;
+
+        }     
 
         public void PrintOfInstance(Instance instanceLabel, string nameItem) {
             rtbRetornoProcesso.AppendText(Environment.NewLine + "*******Imagem******");
@@ -395,18 +319,6 @@ namespace AWS_Rekognition_Objects
 
         }
 
-
-
-        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         public void MensagemErro(string cabecalhoErro, string mensageErro)
         {
             MessageBox.Show($"{cabecalhoErro}, {mensageErro}");
@@ -416,5 +328,6 @@ namespace AWS_Rekognition_Objects
             rtbRetornoProcesso.AppendText($"!! {cabecalhoErro} !!" + Environment.NewLine);
             rtbRetornoProcesso.AppendText(mensageErro);
         }
+        #endregion
     }
 }

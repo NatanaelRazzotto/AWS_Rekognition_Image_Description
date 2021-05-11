@@ -4,16 +4,12 @@ using Amazon.Rekognition.Model;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
+using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using AWS_Rekognition_Objects.Helpers.Model.Entitys;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Image = Amazon.Rekognition.Model.Image;
@@ -30,40 +26,84 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 
         private FileImage file;
 
+        List<string> nomeImagensExistentesBucket = new List<string>();
+
         private List<Label> ListlabelObjectsCategories;
         public AnaliserLabelsAWS(FileImage file) {
             this.file = file;
         }
 
-        public async Task<bool> UploadImageFromS3()
+        public void listarNomesImagensDoBucket()
         {
-            try
+            AmazonS3Client amazonS3Client = new AmazonS3Client(awsCredentials, region);
+            ListObjectsRequest request = new ListObjectsRequest
             {
-                AmazonS3Client amazonS3Client = new AmazonS3Client(awsCredentials, region);
-                TransferUtility transferUtility = new TransferUtility(amazonS3Client);
-                await transferUtility.UploadAsync(file.nameFile, bucketName);
-                return true;
-            }
-            catch (AmazonS3Exception ex)
-            {
-                MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
-                return false;
-            }
+                BucketName = bucketName
+            };
 
+            ListObjectsResponse listResponse;
+            do
+            {
+                listResponse = amazonS3Client.ListObjectsAsync(request).Result;
+                foreach (Amazon.S3.Model.S3Object obj in listResponse.S3Objects)
+                {
+                    nomeImagensExistentesBucket.Add(obj.Key);
+                    Console.WriteLine(obj.Key);
+                    Console.WriteLine(" Size - " + obj.Size);
+                }
+
+                request.Marker = listResponse.NextMarker;
+            } while (listResponse.IsTruncated);
         }
 
-        public List<Label> getListlabelObjectsCategories()
+        public async Task<bool> UploadImageFromS3()
+        {
+            string[] nameFileSeparado = file.nameFile.Split('\\');
+            int qtdeItensNameFile = nameFileSeparado.Length;
+            string nomeImagemAInserir = nameFileSeparado[qtdeItensNameFile - 1];
+            bool inserirArquivoNoBucket = true;
+
+            if (nomeImagensExistentesBucket.Contains(nomeImagemAInserir))
+            {
+                if (MessageBox.Show($"Arquivo ja consta no bucket: {bucketName}, deseja substituilo ?", "Atenção", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    inserirArquivoNoBucket = false;
+                }
+            }
+
+            if (inserirArquivoNoBucket)
+            {
+                try
+                {
+                    AmazonS3Client amazonS3Client = new AmazonS3Client(awsCredentials, region);
+                    TransferUtility transferUtility = new TransferUtility(amazonS3Client);
+                    await transferUtility.UploadAsync(file.nameFile, bucketName);
+                    return true;
+                }
+                catch (AmazonS3Exception ex)
+                {
+                    MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public List<Label> GetListlabelObjectsCategories()
         {
             return ListlabelObjectsCategories;
 
         }
 
-        public async Task<bool> getCredentialsAWS()
+        public async Task<bool> GetCredentialsAWS()
         {
             CredentialProfileStoreChain credentialProfileChain = new CredentialProfileStoreChain();
             if (credentialProfileChain.TryGetAWSCredentials("AWS Educate profileD", out awsCredentials))
@@ -84,7 +124,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             {
                 Image = new Image()
                 {
-                    S3Object = new S3Object()
+                    S3Object = new Amazon.Rekognition.Model.S3Object()
                     {
                         Name = Path.GetFileName(file.nameFile),
                         Bucket = bucketName
@@ -97,7 +137,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             try
             {
                 DetectLabelsResponse detectLabelsResponse = await rekognitionClient.DetectLabelsAsync(detectLabelsRequest);
-                ListlabelObjectsCategories = formatarCoordenadas(detectLabelsResponse.Labels);
+                ListlabelObjectsCategories = FormatCoordinates(detectLabelsResponse.Labels);
                 return true;
             }
             catch (Exception e)
@@ -107,7 +147,8 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 
 
         }
-        public List<Label> formatarCoordenadas(List<Label> labelObjects)
+
+        public List<Label> FormatCoordinates(List<Label> labelObjects)
         {
             foreach (Label item in labelObjects)
             {
@@ -122,36 +163,36 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             return labelObjects;
         }
 
-        [Obsolete("Metodos reconstruido e divido entre outros processos e classes")  ]
-        public List<ObjectCategorized> convertResponseInObjectCategory(List<Label> labelObjects, int pictureWidth, int pictureHeight)
-        {
-            List<ObjectCategorized> listObjectCategorizeds = new List<ObjectCategorized>();
-            foreach (Label item in labelObjects)
-            {
-                ObjectCategorized objectCategorized = new ObjectCategorized();
-                objectCategorized.Name = item.Name;
-                objectCategorized.Confidence = item.Confidence;
-                objectCategorized.penCategory = new Pen(Color.Red);
+        //[Obsolete("Metodos reconstruido e divido entre outros processos e classes")  ]
+        //public List<ObjectCategorized> convertResponseInObjectCategory(List<Label> labelObjects, int pictureWidth, int pictureHeight)
+        //{
+        //    List<ObjectCategorized> listObjectCategorizeds = new List<ObjectCategorized>();
+        //    foreach (Label item in labelObjects)
+        //    {
+        //        ObjectCategorized objectCategorized = new ObjectCategorized();
+        //        objectCategorized.Name = item.Name;
+        //        objectCategorized.Confidence = item.Confidence;
+        //        objectCategorized.penCategory = new Pen(Color.Red);
 
-                // ItemObject[] listRectangleF = new ItemObject[item.Instances.Count];
-                List<ItemObject> listRectangleF = new List<ItemObject>();
-                foreach (Instance itemLabel in item.Instances)
-                {
-                    ItemObject itemObject = new ItemObject();
-                    itemObject.Confidence = itemLabel.Confidence;
-                    itemObject.penItem = new Pen(Color.Red);
-                    //itemLabel.BoundingBox.Top = itemLabel.BoundingBox.Top * pictureHeight;
-                    itemObject.Rectangle = new RectangleF(itemLabel.BoundingBox.Left * pictureWidth,
-                                                          itemLabel.BoundingBox.Top * pictureHeight,
-                                                          itemLabel.BoundingBox.Width * pictureWidth,
-                                                          itemLabel.BoundingBox.Height * pictureHeight);
-                    listRectangleF.Add(itemObject);
-                }
-                objectCategorized.Instances = listRectangleF;
-                listObjectCategorizeds.Add(objectCategorized);
-            }
-            return listObjectCategorizeds;
-        }
+        //        // ItemObject[] listRectangleF = new ItemObject[item.Instances.Count];
+        //        List<ItemObject> listRectangleF = new List<ItemObject>();
+        //        foreach (Instance itemLabel in item.Instances)
+        //        {
+        //            ItemObject itemObject = new ItemObject();
+        //            itemObject.Confidence = itemLabel.Confidence;
+        //            itemObject.penItem = new Pen(Color.Red);
+        //            //itemLabel.BoundingBox.Top = itemLabel.BoundingBox.Top * pictureHeight;
+        //            itemObject.Rectangle = new RectangleF(itemLabel.BoundingBox.Left * pictureWidth,
+        //                                                  itemLabel.BoundingBox.Top * pictureHeight,
+        //                                                  itemLabel.BoundingBox.Width * pictureWidth,
+        //                                                  itemLabel.BoundingBox.Height * pictureHeight);
+        //            listRectangleF.Add(itemObject);
+        //        }
+        //        objectCategorized.Instances = listRectangleF;
+        //        listObjectCategorizeds.Add(objectCategorized);
+        //    }
+        //    return listObjectCategorizeds;
+        //}
 
     }
 }

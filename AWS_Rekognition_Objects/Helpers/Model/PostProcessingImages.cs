@@ -1,20 +1,15 @@
 ﻿using Amazon.Rekognition.Model;
 using AWS_Rekognition_Objects.Helpers.Model.Entitys;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Image = Amazon.Rekognition.Model.Image;
 using Label = Amazon.Rekognition.Model.Label;
-using Point = System.Drawing.Point;
 
 namespace AWS_Rekognition_Objects.Helpers.Model
 {
     class PostProcessingImages
     {
-        public FileImage desenharAnalise(List<Label> detectLabels, FileImage file)
+        public FileImage DrawAnalysis(List<Label> detectLabels, FileImage file)
         {         
             foreach (Label label in detectLabels)
             {
@@ -26,7 +21,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             }
             return file;
         }
-        public FileImage filtrarPorCategoria(List<Instance> ListInstancesCategory, FileImage file)
+        public FileImage Filterbycategory(List<Instance> ListInstancesCategory, FileImage file)
         {
             Pen pen = new Pen(Color.Yellow, 1);
             Bitmap imageAnalizeBitmap = new Bitmap(file.imageAnalizeBitmap);
