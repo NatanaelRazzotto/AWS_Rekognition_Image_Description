@@ -102,7 +102,12 @@ namespace AWS_Rekognition_Objects
                         DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja trabalhar com os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
                         if (dr == DialogResult.Yes)
                         {
-                            controller.analizarImagens(20, 75);
+                            int numL = 20;
+                            Single conf = 75;
+                            controller.analizarImagens(numL, conf);
+                            nudNumLabels.Value = numL;
+                            nudConfidence.Value = Convert.ToDecimal(conf);
+
                             rtbRetornoProcesso.Clear();
                             rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
                             btnLimparCategorias.Enabled = true;
@@ -234,32 +239,204 @@ namespace AWS_Rekognition_Objects
         {
             List<Label> labelsCarregadas = controller.getDetectLabelsResponse();
 
-            for (int i = 0; i < labelsCarregadas.Count - 1; i++)
+
+            foreach (Label item in labelsCarregadas)
             {
-                var label = labelsCarregadas[i];
-                var nome = label.Name;
-                var confidence = label.Confidence.ToString();
-                //var categorias = label.Parents;
-                var categorias = label.Instances; 
+                DTO_LabelInstance dto_LabelInstance = new DTO_LabelInstance();
+                //dto_LabelInstance.idCategoria = item
+                dto_LabelInstance.NameCategoria = item.Name;
+                dto_LabelInstance.CategoryInstances = item.Instances;
+                dto_LabelInstance.confidence = item.Confidence;
+                dto_LabelInstance.parents = item.Parents;
 
-                TreeNode nodeNome = treeViewLabels.Nodes.Add(nome);
-                nodeNome.Nodes.Add($" Confidence : {confidence}%");
+                TreeNode nodeNome = treeViewLabels.Nodes.Add(item.Name);
+                nodeNome.Tag = dto_LabelInstance;
+                TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
 
-                if (categorias.Count != 0)
+
+                for (int j = 0; j < item.Instances.Count - 1; j++)
                 {
+                    DTO_LabelInstance dto_Instance = new DTO_LabelInstance();
+                    dto_Instance.NameCategoria = item.Name;
+                    dto_Instance.CategoryInstances = item.Instances;
+                    dto_Instance.confidence = item.Confidence;
+                    dto_Instance.parents = item.Parents;
+                    dto_Instance.nameItem = ($"{item.Name}_{j}");
+                    dto_Instance.Instance = item.Instances.ElementAt(j);
 
-                    for (int j = 0; j < categorias.Count - 1; j++)
+                    TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{dto_Instance.nameItem} / Confidence : {dto_Instance.Instance.Confidence}%");
+                    treeNodeChild.Tag = dto_Instance;
+                    //var cat = (Instance)treeNodeChild.Tag;
+                    //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
+                }
+                
+            }
+
+            /*
+                         foreach (Label item in labelsCarregadas)
+            {
+                TreeNode nodeNome = treeViewLabels.Nodes.Add(item.Name);
+                TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
+
+                List<Instance> ListInstances = new List<Instance>();
+                for (int j = 0; j < item.Instances.Count - 1; j++)
+                {
+                    List<Instance> instances = new List<Instance>();
+                    Instance categoria = item.Instances.ElementAt(j);
+                    instances.Add(categoria);
+                    TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{item.Name}_{j} Confidence : {categoria.Confidence}%");
+                    //
+                    Label labelInstance = new Label();
+                    labelInstance.Name = item.Name;
+                    labelInstance.Instances = instances;
+
+                    //
+                    treeNodeChild.Tag = labelInstance;
+                    //var cat = (Instance)treeNodeChild.Tag;
+                    //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
+                }
+                
+            }
+             */
+
+
+            //for (int i = 0; i < labelsCarregadas.Count - 1; i++)
+            //{
+            //    Label label = labelsCarregadas[i];
+            //    string nome = label.Name;
+            //    float confidence = label.Confidence;
+            //    List<Instance> categorias = label.Instances; 
+
+            //    TreeNode nodeNome = treeViewLabels.Nodes.Add(nome);
+            //   // nodeNome.Tag = label;
+            //    TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {confidence}%");
+            //   // nodeNomeCategory.Tag = label;
+
+            //    if (categorias.Count != 0)
+            //    {
+            //        for (int j = 0; j < categorias.Count - 1; j++)
+            //        {
+            //            Label labelInstance = new Label();
+            //            labelInstance = label;
+            //            List<Instance> instances = new List<Instance>();
+            //            Instance categoria = categorias[j];
+            //            instances.Add(categoria);
+            //            labelInstance.Instances = instances;
+            //            TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{nome}_{j} Confidence : {categoria.Confidence}%" );
+            //            treeNodeChild.Tag = labelInstance;
+
+            //            //var cat = (Instance)treeNodeChild.Tag;
+            //            //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
+            //        }
+            //    }
+            //}
+        }
+
+        private void treeViewLabels_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxImage.Location = new Point(0, 0);
+
+            TreeNode treeNode = e.Node;
+            if (treeNode.Tag != null)
+            {
+                DTO_LabelInstance instanceLabel = (DTO_LabelInstance)treeNode.Tag;
+
+                if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances != null))
+                {
+                    FileImage InstancesCategory = controller.FilterViewByCategoryInstances(instanceLabel);
+                    pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
+                    pictureBox1.Image = InstancesCategory.imageZoom;
+                    rtbRetornoProcesso.Clear();
+                    rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
+                    rtbRetornoProcesso.ForeColor = Color.Yellow;
+                    rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Confidence: {instanceLabel.confidence}*****");
+                    if (instanceLabel.parents.Count != 0)
                     {
-                        //var categoria = categorias[j].Name;
-                        var categoria = categorias[j];
-                        TreeNode treeNodeChild1 = nodeNome.Nodes.Add($"{nome} - {j}");
-                        treeNodeChild1.Tag = categoria;
-
-                        var cat = (Instance)treeNodeChild1.Tag;
-                        //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
+                        rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
+                        foreach (Parent categoria in instanceLabel.parents)
+                        {
+                            rtbRetornoProcesso.AppendText($"--{categoria.Name}--{Environment.NewLine}");
+                        }
+                    }
+                    int contador = 0;
+                    foreach (Instance item in instanceLabel.CategoryInstances)
+                    {
+                        PrintOfInstance(item, $"{instanceLabel.NameCategoria}_{contador}");
+                        contador++;
                     }
                 }
+                else if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances == null))
+                {
+                    rtbRetornoProcesso.Clear();
+                    rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
+                    rtbRetornoProcesso.ForeColor = Color.Yellow;
+                    rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
+                    rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
+                    if (instanceLabel.parents.Count != 0)
+                    {
+                        rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
+                        foreach (Parent categoria in instanceLabel.parents)
+                        {
+                            rtbRetornoProcesso.AppendText($"--{categoria.Name}--{Environment.NewLine}");
+                        }
+                    }
+                }
+                else if (instanceLabel.Instance != null)
+                {
+                    FileImage InstancesCategory = controller.FilterViewByInstance(instanceLabel);
+                    pictureBoxImage.Image = InstancesCategory.imagesBitmap;
+                    pictureBox1.Image = InstancesCategory.imageZoom;
+                    rtbRetornoProcesso.Clear();
+                    rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
+                    rtbRetornoProcesso.ForeColor = Color.Orange;
+                    rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
+                    if (instanceLabel.parents.Count != 0)
+                    {
+                        rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
+                        foreach (Parent categoria in instanceLabel.parents)
+                        {
+                            rtbRetornoProcesso.AppendText($"--{categoria.Name}--{Environment.NewLine}");
+                        }
+                    }
+                    PrintOfInstance(instanceLabel.Instance, instanceLabel.nameItem);
+                }
+                else
+                {
+
+                }
             }
+
+
+            //TreeNode treeNode = e.Node;
+            //if (treeNode.Tag != null)
+            //{
+            //    Label instanceLabel = (Label)treeNode.Tag;
+
+            //    if (instanceLabel.Instances.Count == 1)
+            //    {
+            //        FileImage InstancesCategory = controller.FilterViewByInstance(instanceLabel);
+            //        pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
+            //        pictureBox1.Image = InstancesCategory.imageZoom;
+            //    }
+            //}
         }
+
+        public void PrintOfInstance(Instance instanceLabel, string nameItem) {
+            rtbRetornoProcesso.AppendText(Environment.NewLine + "***Imagem***" + Environment.NewLine);
+            rtbRetornoProcesso.AppendText($"{Environment.NewLine}-- Identificador : {nameItem} -- Confidence: {instanceLabel.Confidence}%--");
+            rtbRetornoProcesso.AppendText(Environment.NewLine);
+            rtbRetornoProcesso.AppendText("--Coordenadas--");
+            rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Eixo_X(left): {instanceLabel.BoundingBox.Left}");
+            rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Eixo_Y(top): {instanceLabel.BoundingBox.Top}");
+            rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Width: {instanceLabel.BoundingBox.Width}");
+            rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Height: {instanceLabel.BoundingBox.Height}");
+
+        }
+
     }
 }

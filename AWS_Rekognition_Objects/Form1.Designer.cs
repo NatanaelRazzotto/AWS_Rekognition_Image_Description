@@ -247,6 +247,11 @@ namespace AWS_Rekognition_Objects
             this.nudConfidence.Name = "nudConfidence";
             this.nudConfidence.Size = new System.Drawing.Size(136, 23);
             this.nudConfidence.TabIndex = 12;
+            this.nudConfidence.Value = new decimal(new int[] {
+            75,
+            0,
+            0,
+            0});
             // 
             // nudNumLabels
             // 
@@ -254,6 +259,11 @@ namespace AWS_Rekognition_Objects
             this.nudNumLabels.Name = "nudNumLabels";
             this.nudNumLabels.Size = new System.Drawing.Size(131, 23);
             this.nudNumLabels.TabIndex = 8;
+            this.nudNumLabels.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
             // 
             // btnSelection
             // 
@@ -294,6 +304,7 @@ namespace AWS_Rekognition_Objects
             this.treeViewLabels.Name = "treeViewLabels";
             this.treeViewLabels.Size = new System.Drawing.Size(225, 267);
             this.treeViewLabels.TabIndex = 1;
+            this.treeViewLabels.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewLabels_NodeMouseClick);
             // 
             // label1
             // 

@@ -100,5 +100,17 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
 
             return fileImage;
         }
+        public FileImage FilterViewByInstance(DTO_LabelInstance instanceLabel)
+        {
+            fileImage = processingImages.filtrarPorCategoria(instanceLabel.CategoryInstances, fileImage);
+            fileImage = processingImages.filtrarPorInstance(instanceLabel.Instance, fileImage);
+            fileImage = processingImages.zoomImage(instanceLabel.Instance, fileImage);
+            return fileImage;
+        }
+        public FileImage FilterViewByCategoryInstances(DTO_LabelInstance instanceLabel)
+        {
+            fileImage = processingImages.filtrarPorCategoria(instanceLabel.CategoryInstances, fileImage);
+            return fileImage;
+        }
     }
 }
