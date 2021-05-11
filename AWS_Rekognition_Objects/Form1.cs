@@ -62,6 +62,7 @@ namespace AWS_Rekognition_Objects
             {
                 controller = new Controller(this);
                 pictureBoxImage.Load(controller.SetFileImage(openFileDialog1.FileName));
+                pictureBox1.Image = null;
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
                 nudConfidence.Enabled = true;
