@@ -27,7 +27,6 @@ namespace AWS_Rekognition_Objects
 {
     public partial class Form1 : Form
     {
-        // ViewForm viewForm;
         Controller controller;
         public Form1()
         {
@@ -51,12 +50,11 @@ namespace AWS_Rekognition_Objects
         private void btnLimparCategorias_Click(object sender, EventArgs e)
         {
             btnAnalizarImage.Enabled = false;
-            // btnLimparCategorias.Enabled = false;
-            // btnRestart.Enabled = false;
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
-            pictureBoxImage.Image = controller.RestartCategory().imageAnalizeBitmap;
+            pictureBoxImage.Image = controller.ResetCategory().imageAnalizeBitmap;
             pictureBox1.Image = null;
+            rtbRetornoProcesso.Clear();
         }
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
@@ -68,7 +66,7 @@ namespace AWS_Rekognition_Objects
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 controller = new Controller(this);
-                pictureBoxImage.Load(controller.definirArquivoImage(openFileDialog1.FileName));
+                pictureBoxImage.Load(controller.setFileImage(openFileDialog1.FileName));
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
 
@@ -76,71 +74,64 @@ namespace AWS_Rekognition_Objects
                 logRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
                 logRegister.Log("Teste de execução");
 
-                /*  Bitmap imageAnalizeBitmap = new Bitmap(openFileDialog1.FileName);
-                  Bitmap b = new Bitmap(imageAnalizeBitmap);
-                  Graphics graphics = Graphics.FromImage(b);
-                  Pen pen = new Pen(Color.Aqua, 2);
-                  graphics.DrawRectangle(pen, pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50,
-                                             pictureBoxImage.Image.Width - 50, pictureBoxImage.Image.Height - 50);
-
-                  pictureBoxImage.Image = imageAnalizeBitmap;*/
             }
 
         }
 
         private async void btnAnalizarImage_Click(object sender, EventArgs e)
         {
-            if (controller.verificarArquivo())
+            if (controller.checkArchive())
             {
-                bool getCrendentials = await controller.ValidarOperacao();
+                bool getCrendentials = await controller.ValidateOperation();
                 if (getCrendentials)
                 {
                     int numbLabels = Convert.ToInt32(nudNumLabels.Value);
                     Single confidence = Convert.ToSingle(nudConfidence.Value);
                     if ((numbLabels == 0) && (confidence == 0))
                     {
-                        DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja trabalhar com os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                        DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja MANTER os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
                         if (dr == DialogResult.Yes)
                         {
                             int numL = 20;
                             Single conf = 75;
-                            controller.analizarImagens(numL, conf);
-                            nudNumLabels.Value = numL;
-                            nudConfidence.Value = Convert.ToDecimal(conf);
-
+                            controller.AnalyzeImages(numL, conf);
                             rtbRetornoProcesso.Clear();
-                            rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
+                            rtbRetornoProcesso.AppendText("Iniciando Analise");
+                            rtbRetornoProcesso.AppendText(Environment.NewLine + "Aquarde.....");
                             btnLimparCategorias.Enabled = true;
                             btnRestart.Enabled = true;
-
+                            btnAnalizarImage.Enabled = false;
                         }
                     }
                     else
                     {
-                        controller.analizarImagens(numbLabels, confidence);
+                        controller.AnalyzeImages(numbLabels, confidence);
                         rtbRetornoProcesso.Clear();
-                        rtbRetornoProcesso.AppendText("Analise Realizada com Sucesso");
+                        rtbRetornoProcesso.AppendText("Iniciando Analise");
+                        rtbRetornoProcesso.AppendText(Environment.NewLine +"Aquarde.....");
                         btnLimparCategorias.Enabled = true;
                         btnRestart.Enabled = true;
+                        btnAnalizarImage.Enabled = false;
 
                     }
                 }
                 else
                 {
+                    rtbRetornoProcesso.ForeColor = Color.Red;
                     rtbRetornoProcesso.Clear();
-                    rtbRetornoProcesso.AppendText("Dados NÃO obtidas com sucesso");
+                    rtbRetornoProcesso.AppendText("Credenciais NÃO ACEITAS! Verifique se seu token expirou.");
                 }
 
-                // await DetectScenes(controller.obtemNomeArquivo());
             }
             else
             {
+                rtbRetornoProcesso.ForeColor = Color.Red;
                 rtbRetornoProcesso.Clear();
-                rtbRetornoProcesso.AppendText("ERRO, não foi possivel obter o arquivo");
+                rtbRetornoProcesso.AppendText("ERRO, não foi possivel obter o arquivo!");
             }
         }
 
-        public void desenharAnalise(List<Label> detectLabels, FileImage file)
+        public void drawAnalyze(List<Label> detectLabels, FileImage file)
         {
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
@@ -148,7 +139,7 @@ namespace AWS_Rekognition_Objects
             {
                 foreach (Instance instance in label.Instances)
                 {
-                    rtbRetornoProcesso.AppendText($"{label.Name} : {label.Confidence}");
+                    rtbRetornoProcesso.AppendText($"{label.Name + Environment.NewLine} ");
                 }
             }
             pictureBoxImage.Image = file.imageAnalizeBitmap;
@@ -178,16 +169,6 @@ namespace AWS_Rekognition_Objects
             }
         }
 
-        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         private void pictureBoxImage_MouseUp(object sender, MouseEventArgs e)
         {
             double coordinateX = e.X;
@@ -212,7 +193,7 @@ namespace AWS_Rekognition_Objects
             }
             // rtbRetornoProcesso.AppendText($" x = {coordinateX} : y = {coordinateY}");
         }
-
+        [Obsolete]
         private void btnSelection_Click(object sender, EventArgs e)
         {
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -222,20 +203,17 @@ namespace AWS_Rekognition_Objects
             pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
 
         }
-
+        [Obsolete]
         private void btnItemIndividual_Click(object sender, EventArgs e)
         {
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
-            //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            //pictureBox1.Location = new Point(0, 0);
-            //Passa o valor do Index da lista
             FileImage InstancesCategory = controller.FilterViewByCategoryItem(2, 2);
             pictureBoxImage.Image = InstancesCategory.imagesBitmap;
             pictureBox1.Image = InstancesCategory.imageZoom;
         }
 
-        public void gerarTreeView()
+        public void generateTreeView()
         {
             List<Label> labelsCarregadas = controller.getDetectLabelsResponse();
 
@@ -254,7 +232,7 @@ namespace AWS_Rekognition_Objects
                 TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
 
 
-                for (int j = 0; j < item.Instances.Count - 1; j++)
+                for (int j = 0; j < item.Instances.Count; j++)
                 {
                     DTO_LabelInstance dto_Instance = new DTO_LabelInstance();
                     dto_Instance.NameCategoria = item.Name;
@@ -266,70 +244,10 @@ namespace AWS_Rekognition_Objects
 
                     TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{dto_Instance.nameItem} / Confidence : {dto_Instance.Instance.Confidence}%");
                     treeNodeChild.Tag = dto_Instance;
-                    //var cat = (Instance)treeNodeChild.Tag;
-                    //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
                 }
                 
             }
-
-            /*
-                         foreach (Label item in labelsCarregadas)
-            {
-                TreeNode nodeNome = treeViewLabels.Nodes.Add(item.Name);
-                TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {item.Confidence}%");
-
-                List<Instance> ListInstances = new List<Instance>();
-                for (int j = 0; j < item.Instances.Count - 1; j++)
-                {
-                    List<Instance> instances = new List<Instance>();
-                    Instance categoria = item.Instances.ElementAt(j);
-                    instances.Add(categoria);
-                    TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{item.Name}_{j} Confidence : {categoria.Confidence}%");
-                    //
-                    Label labelInstance = new Label();
-                    labelInstance.Name = item.Name;
-                    labelInstance.Instances = instances;
-
-                    //
-                    treeNodeChild.Tag = labelInstance;
-                    //var cat = (Instance)treeNodeChild.Tag;
-                    //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
-                }
-                
-            }
-             */
-
-
-            //for (int i = 0; i < labelsCarregadas.Count - 1; i++)
-            //{
-            //    Label label = labelsCarregadas[i];
-            //    string nome = label.Name;
-            //    float confidence = label.Confidence;
-            //    List<Instance> categorias = label.Instances; 
-
-            //    TreeNode nodeNome = treeViewLabels.Nodes.Add(nome);
-            //   // nodeNome.Tag = label;
-            //    TreeNode nodeNomeCategory = nodeNome.Nodes.Add($" Confidence : {confidence}%");
-            //   // nodeNomeCategory.Tag = label;
-
-            //    if (categorias.Count != 0)
-            //    {
-            //        for (int j = 0; j < categorias.Count - 1; j++)
-            //        {
-            //            Label labelInstance = new Label();
-            //            labelInstance = label;
-            //            List<Instance> instances = new List<Instance>();
-            //            Instance categoria = categorias[j];
-            //            instances.Add(categoria);
-            //            labelInstance.Instances = instances;
-            //            TreeNode treeNodeChild = nodeNomeCategory.Nodes.Add($"{nome}_{j} Confidence : {categoria.Confidence}%" );
-            //            treeNodeChild.Tag = labelInstance;
-
-            //            //var cat = (Instance)treeNodeChild.Tag;
-            //            //nodeNome.Nodes.Add($"Car{j} : {categoria.BoundingBox.Top} - Confidence {categoria.Confidence}");
-            //        }
-            //    }
-            //}
+            
         }
 
         private void treeViewLabels_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -346,7 +264,7 @@ namespace AWS_Rekognition_Objects
                 {
                     FileImage InstancesCategory = controller.FilterViewByCategoryInstances(instanceLabel);
                     pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
-                    pictureBox1.Image = InstancesCategory.imageZoom;
+                    pictureBox1.Image = null;
                     rtbRetornoProcesso.Clear();
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Yellow;
@@ -370,6 +288,9 @@ namespace AWS_Rekognition_Objects
                 }
                 else if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances == null))
                 {
+                    FileImage InstancesCategory = controller.GetFileImage();
+                    pictureBoxImage.Image = InstancesCategory.imageAnalizeBitmap;
+                    pictureBox1.Image =null;
                     rtbRetornoProcesso.Clear();
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Yellow;
@@ -384,6 +305,7 @@ namespace AWS_Rekognition_Objects
                             rtbRetornoProcesso.AppendText($"--{categoria.Name}--{Environment.NewLine}");
                         }
                     }
+
                 }
                 else if (instanceLabel.Instance != null)
                 {
@@ -410,20 +332,6 @@ namespace AWS_Rekognition_Objects
 
                 }
             }
-
-
-            //TreeNode treeNode = e.Node;
-            //if (treeNode.Tag != null)
-            //{
-            //    Label instanceLabel = (Label)treeNode.Tag;
-
-            //    if (instanceLabel.Instances.Count == 1)
-            //    {
-            //        FileImage InstancesCategory = controller.FilterViewByInstance(instanceLabel);
-            //        pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
-            //        pictureBox1.Image = InstancesCategory.imageZoom;
-            //    }
-            //}
         }
 
         public void PrintOfInstance(Instance instanceLabel, string nameItem) {
@@ -435,6 +343,17 @@ namespace AWS_Rekognition_Objects
             rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Eixo_Y(top): {instanceLabel.BoundingBox.Top}");
             rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Width: {instanceLabel.BoundingBox.Width}");
             rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Height: {instanceLabel.BoundingBox.Height}");
+
+        }
+
+
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
 
         }
 

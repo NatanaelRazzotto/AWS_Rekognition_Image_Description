@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
 {
+    [Obsolete("Classe obsoleta não usar!")]
     class ObjectCategorized
     {
         public string Name { get; set; }

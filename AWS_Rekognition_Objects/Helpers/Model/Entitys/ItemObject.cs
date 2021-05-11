@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
 {
+    [Obsolete ("Classe obsoleta não usar!")]
     public class ItemObject
     {
         public Pen penItem { get; set; }

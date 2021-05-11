@@ -20,7 +20,7 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
             this.processingImages = new PostProcessingImages();
         }
 
-        public FileImage RestartCategory()
+        public FileImage ResetCategory()
         {
             fileImage.imagesBitmap = null;
             fileImage.imagesOfCategoryBitmap = null;
@@ -29,12 +29,12 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
             return fileImage;
         }
 
-        public string definirArquivoImage(String nameFile) {
+        public string setFileImage(String nameFile) {
             fileImage = new FileImage(nameFile);
             this.analizadorArquivo = new AnaliserLabelsAWS(fileImage);
             return fileImage.nameFile;
         }
-        public bool verificarArquivo() {
+        public bool checkArchive() {
             if (fileImage != null)
             {
                 if (!String.IsNullOrEmpty(fileImage.nameFile))
@@ -49,47 +49,48 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
             }
             return false;
         }
-        public string obtemNomeArquivo() {
+        public string getFileName() {
             return fileImage.nameFile;
         }
-        public async void analizarImagens(int numberLabels, Single minConfidence) {
+        public async void AnalyzeImages(int numberLabels, Single minConfidence) {
             bool inclusao = await analizadorArquivo.UploadImageFromS3();
             if (inclusao)
             {
                 await analizadorArquivo.DetectScenes( numberLabels, minConfidence);
-               // detectLabelsResponse = analizadorArquivo.getListlabelObjectsCategories();
-                await desenharAnalise();
+                await DrawAnalysis();
 
-                formPrincipal.gerarTreeView();
+                formPrincipal.generateTreeView();
             }
         }
-        private async Task desenharAnalise()//DetectLabelsResponse detectLabelsResponse
+        private async Task DrawAnalysis()//DetectLabelsResponse detectLabelsResponse
         {
             fileImage = processingImages.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
-            formPrincipal.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
-            //formPrincipal.convertResponseInObjectcategory(detectLabelsResponse.Labels);
+            formPrincipal.drawAnalyze(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
+
         }
-        //[Obsolete("Metodo de teste não incluido na versão final.")]
+
         public List<Label> getDetectLabelsResponse() {
             return analizadorArquivo.getListlabelObjectsCategories();
         }
 
-        public async Task<bool> ValidarOperacao()
+        public async Task<bool> ValidateOperation()
         {
             bool validador = await analizadorArquivo.getCredentialsAWS();
             return validador;
         }
-
+        [Obsolete("Metodos substituidos pela tag de TreeView")]
         public Label FilterViewByCategory(int IndexCategory)
         {
             List<Label> labelsDetecteds = analizadorArquivo.getListlabelObjectsCategories();
             return labelsDetecteds.ElementAt(IndexCategory);
         }
+        [Obsolete("Metodos substituidos pela tag de TreeView")]
         public FileImage FilterViewByCategorybyInstances(int IndexCategory)
         {
             fileImage = processingImages.filtrarPorCategoria(FilterViewByCategory(IndexCategory).Instances, fileImage);
             return fileImage;
         }
+        [Obsolete("Metodos substituidos pela tag de TreeView")]
         public FileImage FilterViewByCategoryItem(int IndexCategory,int IndexItem)
         {
             List<Instance> CategoryFilter = FilterViewByCategory(IndexCategory).Instances;
@@ -110,6 +111,9 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         public FileImage FilterViewByCategoryInstances(DTO_LabelInstance instanceLabel)
         {
             fileImage = processingImages.filtrarPorCategoria(instanceLabel.CategoryInstances, fileImage);
+            return fileImage;
+        }
+        public FileImage GetFileImage() {
             return fileImage;
         }
     }

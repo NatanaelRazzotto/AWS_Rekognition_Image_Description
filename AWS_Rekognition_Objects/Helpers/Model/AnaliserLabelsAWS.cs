@@ -27,21 +27,14 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         private static readonly RegionEndpoint region = RegionEndpoint.USEast1;
 
         private const string bucketName = "demo-unibrasil-imgobjectreko";
-        //private string fileName;
-        private FileImage file;
 
-        [Obsolete("Atributo substituido pelos atributos de (FileIamge)")]
-        private int pictureWidth, pictureHeight;
+        private FileImage file;
 
         private List<Label> ListlabelObjectsCategories;
         public AnaliserLabelsAWS(FileImage file) {
             this.file = file;
         }
-        [Obsolete("Metodo substituido pelos atributos de (FileIamge)")]
-        public void DefinirDimensoesPicture(int pictureWidth, int pictureHeight) {
-            this.pictureWidth = pictureWidth;
-            this.pictureHeight = pictureHeight;
-        }
+
         public async Task<bool> UploadImageFromS3()
         {
             try
@@ -105,13 +98,10 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             {
                 DetectLabelsResponse detectLabelsResponse = await rekognitionClient.DetectLabelsAsync(detectLabelsRequest);
                 ListlabelObjectsCategories = formatarCoordenadas(detectLabelsResponse.Labels);
-                // List<ObjectCategorized> listObjectCategorizeds = convertResponseInObjectCategory(detectLabelsResponse.Labels, 20, 20);
                 return true;
             }
             catch (Exception e)
             {
-
-                //rtbRetornoProcesso.AppendText($"Ocorreu um erro{e.Message}");
                 Console.WriteLine($"Ocorreu um erro{e.Message}");
                 return false;
                 throw;
@@ -133,6 +123,8 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             }
             return labelObjects;
         }
+
+        [Obsolete("Metodos reconstruido e divido entre outros processos e classes")  ]
         public List<ObjectCategorized> convertResponseInObjectCategory(List<Label> labelObjects, int pictureWidth, int pictureHeight)
         {
             List<ObjectCategorized> listObjectCategorizeds = new List<ObjectCategorized>();

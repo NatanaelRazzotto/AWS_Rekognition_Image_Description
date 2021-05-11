@@ -48,8 +48,8 @@ namespace AWS_Rekognition_Objects.Helpers.Model.Entitys
 
         public FileImage()
         {
-
         }
+
         public FileImage(String _nameFile) {
             this._nameFile = _nameFile;
             this._image = Image.FromFile(_nameFile);

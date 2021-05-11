@@ -15,8 +15,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
     class PostProcessingImages
     {
         public FileImage desenharAnalise(List<Label> detectLabels, FileImage file)
-        {
-         
+        {         
             foreach (Label label in detectLabels)
             {
                 Pen pen = new Pen(Color.Red);
@@ -29,12 +28,8 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         }
         public FileImage filtrarPorCategoria(List<Instance> ListInstancesCategory, FileImage file)
         {
-            // FileImage fileImage = (FileImage)file.Clone();
-            // FileImage fileImage = new FileImage();
-            Pen pen = new Pen(Color.Aqua, 2);
-
+            Pen pen = new Pen(Color.Yellow, 1);
             Bitmap imageAnalizeBitmap = new Bitmap(file.imageAnalizeBitmap);
-
             foreach (Instance instancesCategory in ListInstancesCategory)
             {
                 file.imagesOfCategoryBitmap =  definedRectangle(instancesCategory, imageAnalizeBitmap , pen);
@@ -43,9 +38,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         }
         public FileImage filtrarPorInstance(Instance instance, FileImage file)
         {
-            Pen pen = new Pen(Color.BlueViolet, 3);
-           // FileImage file = new FileImage();
-            //file.imageAnalizeBitmap = fileImage.imageAnalizeBitmap;
+            Pen pen = new Pen(Color.Orange, 3);
             Bitmap imageAnalizeBitmap = new Bitmap(file.imagesOfCategoryBitmap);
             file.imagesBitmap = definedRectangle(instance, imageAnalizeBitmap, pen);
             
