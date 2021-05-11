@@ -13,9 +13,9 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
     {
         AnaliserLabelsAWS analizadorArquivo;
         FileImage fileImage;
-        Form1 formPrincipal;
+        IViewAnalyzer formPrincipal;
         PostProcessingImages processingImages;
-        public Controller(Form1 formPrincipal) {
+        public Controller(IViewAnalyzer formPrincipal) {
             this.formPrincipal = formPrincipal;
             this.processingImages = new PostProcessingImages();
         }
@@ -65,7 +65,9 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         private async Task DrawAnalysis()//DetectLabelsResponse detectLabelsResponse
         {
             fileImage = processingImages.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
-            formPrincipal.drawAnalyze(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
+            List<Label> labelsResponse = analizadorArquivo.getListlabelObjectsCategories();
+            formPrincipal.ConstructTAG(ConstructTAGLabels(labelsResponse));
+            formPrincipal.drawAnalyze(labelsResponse, fileImage);
 
         }
 
@@ -115,6 +117,9 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         }
         public FileImage GetFileImage() {
             return fileImage;
+        }
+        public List<String> ConstructTAGLabels(List<Label> labels) {
+            return processingImages.ConstructOfTag(labels);
         }
     }
 }

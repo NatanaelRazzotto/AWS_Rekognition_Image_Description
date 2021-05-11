@@ -38,7 +38,7 @@ namespace AWS_Rekognition_Objects
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBoxImage = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.rtbTAG = new System.Windows.Forms.RichTextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -173,7 +173,7 @@ namespace AWS_Rekognition_Objects
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.panel3.Controls.Add(this.richTextBox1);
+            this.panel3.Controls.Add(this.rtbTAG);
             this.panel3.Controls.Add(this.label4);
             this.panel3.Controls.Add(this.label3);
             this.panel3.Controls.Add(this.label5);
@@ -191,13 +191,13 @@ namespace AWS_Rekognition_Objects
             this.panel3.Size = new System.Drawing.Size(586, 570);
             this.panel3.TabIndex = 3;
             // 
-            // richTextBox1
+            // rtbTAG
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(77, 493);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(454, 65);
-            this.richTextBox1.TabIndex = 16;
-            this.richTextBox1.Text = "";
+            this.rtbTAG.Location = new System.Drawing.Point(77, 493);
+            this.rtbTAG.Name = "rtbTAG";
+            this.rtbTAG.Size = new System.Drawing.Size(454, 65);
+            this.rtbTAG.TabIndex = 16;
+            this.rtbTAG.Text = "";
             // 
             // label4
             // 
@@ -331,6 +331,7 @@ namespace AWS_Rekognition_Objects
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Image Objective Recognition";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -369,7 +370,7 @@ namespace AWS_Rekognition_Objects
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnRestart;
         private System.Windows.Forms.Button btnLimparCategorias;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox rtbTAG;
         private System.Windows.Forms.Label label4;
     }
 }

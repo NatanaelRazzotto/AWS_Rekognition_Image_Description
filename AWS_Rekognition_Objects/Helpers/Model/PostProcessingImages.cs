@@ -61,6 +61,32 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             return file;
         }
 
+        public List<string> ConstructOfTag(List<Label> detectLabels) {
+
+            List<string> listStringTAG = new List<string>();
+            foreach (Label label in detectLabels)
+            {
+                if (label.Parents.Count() == 0)
+                {
+                    if (!listStringTAG.Contains(label.Name))
+                    {
+                        listStringTAG.Add(label.Name);
+                    }
+                }
+                else
+                {
+                    foreach (Parent parent in label.Parents)
+                    {
+                        if (!listStringTAG.Contains(parent.Name))
+                        {
+                            listStringTAG.Add(parent.Name);
+                        }
+                    }
+                }
+            }
+
+            return listStringTAG;
+        }
 
     }
 }

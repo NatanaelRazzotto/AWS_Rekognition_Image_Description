@@ -5,10 +5,10 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using AWS_Rekognition_Objects.Helpers;
 using AWS_Rekognition_Objects.Helpers.Controller;
 using AWS_Rekognition_Objects.Helpers.Model;
 using AWS_Rekognition_Objects.Helpers.Model.Entitys;
-using AWS_Rekognition_Objects.Helpers.View;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,7 +25,7 @@ using Point = System.Drawing.Point;
 
 namespace AWS_Rekognition_Objects
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form , IViewAnalyzer
     {
         Controller controller;
         public Form1()
@@ -55,6 +55,7 @@ namespace AWS_Rekognition_Objects
             pictureBoxImage.Image = controller.ResetCategory().imageAnalizeBitmap;
             pictureBox1.Image = null;
             rtbRetornoProcesso.Clear();
+            rtbTAG.Clear();
         }
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
@@ -69,6 +70,8 @@ namespace AWS_Rekognition_Objects
                 pictureBoxImage.Load(controller.setFileImage(openFileDialog1.FileName));
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
+                treeViewLabels.Nodes.Clear();
+                rtbTAG.Clear();
 
                 LogRegister logRegister = new LogRegister();
                 logRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
@@ -76,7 +79,7 @@ namespace AWS_Rekognition_Objects
 
             }
 
-        }
+        } 
 
         private async void btnAnalizarImage_Click(object sender, EventArgs e)
         {
@@ -129,6 +132,27 @@ namespace AWS_Rekognition_Objects
                 rtbRetornoProcesso.Clear();
                 rtbRetornoProcesso.AppendText("ERRO, não foi possivel obter o arquivo!");
             }
+        }
+        public void ConstructTAG(List<string> labelsResponse)
+        {
+            rtbTAG.Clear();
+            rtbTAG.SelectionAlignment = HorizontalAlignment.Center;
+            rtbTAG.ForeColor = Color.Black;
+
+            String Tag = "";
+            foreach (string label in labelsResponse)
+            {
+                if (String.IsNullOrEmpty(Tag))
+                {
+                    Tag = label;
+                }
+                else
+                {
+                    Tag = ($"{Tag} , {label} ");
+                }
+            }
+
+            rtbTAG.AppendText(Tag + ",");
         }
 
         public void drawAnalyze(List<Label> detectLabels, FileImage file)
@@ -345,6 +369,7 @@ namespace AWS_Rekognition_Objects
             rtbRetornoProcesso.AppendText($"{Environment.NewLine}--Height: {instanceLabel.BoundingBox.Height}");
 
         }
+
 
 
         private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
