@@ -205,7 +205,6 @@ namespace AWS_Rekognition_Objects
                 }
                 else if (instanceLabel.Instance != null)
                 {
-                    logRegister.Log("Selecao de Item Categoria ");
                     FileImage InstancesCategory = controller.FilterViewByInstance(instanceLabel);
                     pictureBoxImage.Image = InstancesCategory.imagesBitmap;
                     pictureBox1.Image = InstancesCategory.imageZoom;
