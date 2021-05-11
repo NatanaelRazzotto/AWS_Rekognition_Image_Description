@@ -156,7 +156,7 @@ namespace AWS_Rekognition_Objects
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 68);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1305, 570);
+            this.panel2.Size = new System.Drawing.Size(1305, 553);
             this.panel2.TabIndex = 2;
             // 
             // pictureBoxImage
@@ -188,14 +188,14 @@ namespace AWS_Rekognition_Objects
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel3.Location = new System.Drawing.Point(719, 68);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(586, 570);
+            this.panel3.Size = new System.Drawing.Size(586, 553);
             this.panel3.TabIndex = 3;
             // 
             // rtbTAG
             // 
             this.rtbTAG.Location = new System.Drawing.Point(77, 493);
             this.rtbTAG.Name = "rtbTAG";
-            this.rtbTAG.Size = new System.Drawing.Size(454, 65);
+            this.rtbTAG.Size = new System.Drawing.Size(454, 51);
             this.rtbTAG.TabIndex = 16;
             this.rtbTAG.Text = "";
             // 
@@ -232,6 +232,8 @@ namespace AWS_Rekognition_Objects
             // 
             // nudConfidence
             // 
+            this.nudConfidence.DecimalPlaces = 6;
+            this.nudConfidence.Enabled = false;
             this.nudConfidence.Location = new System.Drawing.Point(328, 87);
             this.nudConfidence.Name = "nudConfidence";
             this.nudConfidence.Size = new System.Drawing.Size(136, 23);
@@ -244,6 +246,7 @@ namespace AWS_Rekognition_Objects
             // 
             // nudNumLabels
             // 
+            this.nudNumLabels.Enabled = false;
             this.nudNumLabels.Location = new System.Drawing.Point(113, 87);
             this.nudNumLabels.Name = "nudNumLabels";
             this.nudNumLabels.Size = new System.Drawing.Size(131, 23);
@@ -326,7 +329,7 @@ namespace AWS_Rekognition_Objects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1305, 638);
+            this.ClientSize = new System.Drawing.Size(1305, 621);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);

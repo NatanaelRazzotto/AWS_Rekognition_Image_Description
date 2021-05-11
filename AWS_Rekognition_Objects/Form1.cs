@@ -28,6 +28,7 @@ namespace AWS_Rekognition_Objects
     public partial class Form1 : Form , IViewAnalyzer
     {
         Controller controller;
+        LogRegister logRegister;
         public Form1()
         {
             InitializeComponent();
@@ -38,6 +39,7 @@ namespace AWS_Rekognition_Objects
             btnAnalizarImage.Enabled = false;
             btnLimparCategorias.Enabled = false;
             btnRestart.Enabled = false;
+            logRegister = new LogRegister();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -57,6 +59,10 @@ namespace AWS_Rekognition_Objects
             rtbRetornoProcesso.Clear();
             rtbTAG.Clear();
         }
+        public void releaseNumericsUpDown(bool defined) {
+            nudConfidence.Enabled = true;
+            nudNumLabels.Enabled = true;
+        }
 
         private void btnImageBrowse_Click(object sender, EventArgs e)
         {
@@ -70,12 +76,15 @@ namespace AWS_Rekognition_Objects
                 pictureBoxImage.Load(controller.setFileImage(openFileDialog1.FileName));
                 lblNomeArquivo.Text = openFileDialog1.FileName;
                 btnAnalizarImage.Enabled = true;
+                nudConfidence.Enabled = true;
+                nudNumLabels.Enabled = true;
                 treeViewLabels.Nodes.Clear();
                 rtbTAG.Clear();
+                rtbRetornoProcesso.Clear();
+                rtbRetornoProcesso.ForeColor = Color.White;
 
-                LogRegister logRegister = new LogRegister();
                 logRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
-                logRegister.Log("Teste de execução");
+                logRegister.Log("Inclusao de Arquivo");
 
             }
 
@@ -83,54 +92,65 @@ namespace AWS_Rekognition_Objects
 
         private async void btnAnalizarImage_Click(object sender, EventArgs e)
         {
-            if (controller.checkArchive())
+            try
             {
-                bool getCrendentials = await controller.ValidateOperation();
-                if (getCrendentials)
+                if (controller.checkArchive())
                 {
-                    int numbLabels = Convert.ToInt32(nudNumLabels.Value);
-                    Single confidence = Convert.ToSingle(nudConfidence.Value);
-                    if ((numbLabels == 0) && (confidence == 0))
+                    bool getCrendentials = await controller.ValidateOperation();
+                    if (getCrendentials)
                     {
-                        DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja MANTER os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
-                        if (dr == DialogResult.Yes)
+
+                        int numbLabels = Convert.ToInt32(nudNumLabels.Value);
+                        float confidence = (float) Convert.ToDouble(nudConfidence.Value);
+                        if ((numbLabels == 0) && (confidence == 0))
                         {
-                            int numL = 20;
-                            Single conf = 75;
-                            controller.AnalyzeImages(numL, conf);
+                            DialogResult dr = MessageBox.Show("Você não informou os Paremetros", "Deseja MANTER os valores Padrões?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+                            if (dr == DialogResult.Yes)
+                            {
+                                logRegister.Log("Inclusao de arquivo para analise com valor padrao");
+                                int numL = 20;
+                                float conf = 75F;
+                                controller.AnalyzeImages(numL, conf);
+                                rtbRetornoProcesso.Clear();
+                                rtbRetornoProcesso.AppendText("Iniciando Análise");
+                                rtbRetornoProcesso.AppendText(Environment.NewLine + "Aquarde.....");
+                                btnLimparCategorias.Enabled = true;
+                                btnRestart.Enabled = true;
+                                btnAnalizarImage.Enabled = false;
+
+                            }
+                        }
+                        else
+                        {
+                            logRegister.Log("Inclusao de arquivo para analise com valor padrao");
+                            controller.AnalyzeImages(numbLabels, confidence);
                             rtbRetornoProcesso.Clear();
-                            rtbRetornoProcesso.AppendText("Iniciando Analise");
-                            rtbRetornoProcesso.AppendText(Environment.NewLine + "Aquarde.....");
+                            rtbRetornoProcesso.AppendText("Iniciando Análise");
+                            rtbRetornoProcesso.AppendText(Environment.NewLine +"Aquarde.....");
                             btnLimparCategorias.Enabled = true;
                             btnRestart.Enabled = true;
                             btnAnalizarImage.Enabled = false;
+
                         }
                     }
                     else
                     {
-                        controller.AnalyzeImages(numbLabels, confidence);
-                        rtbRetornoProcesso.Clear();
-                        rtbRetornoProcesso.AppendText("Iniciando Analise");
-                        rtbRetornoProcesso.AppendText(Environment.NewLine +"Aquarde.....");
-                        btnLimparCategorias.Enabled = true;
-                        btnRestart.Enabled = true;
-                        btnAnalizarImage.Enabled = false;
+
+                        MensagemErro("Credenciais NÃO ACEITAS!", " Verifique se seu token expirou.");
 
                     }
+
                 }
                 else
                 {
-                    rtbRetornoProcesso.ForeColor = Color.Red;
-                    rtbRetornoProcesso.Clear();
-                    rtbRetornoProcesso.AppendText("Credenciais NÃO ACEITAS! Verifique se seu token expirou.");
+                    MensagemErro("ERRO", " não foi possivel obter o arquivo!");
                 }
-
             }
-            else
-            {
-                rtbRetornoProcesso.ForeColor = Color.Red;
-                rtbRetornoProcesso.Clear();
-                rtbRetornoProcesso.AppendText("ERRO, não foi possivel obter o arquivo!");
+            catch (Exception ex)
+            {                
+                logRegister.Log(String.Format($"{"Log criado em "} : {DateTime.Now}"), "ArquivoLog");
+                logRegister.Log(ex.Message);
+                MensagemErro("ERRO", ex.Message);
             }
         }
         public void ConstructTAG(List<string> labelsResponse)
@@ -153,20 +173,25 @@ namespace AWS_Rekognition_Objects
             }
 
             rtbTAG.AppendText(Tag + ",");
+            logRegister.Log("Geração da TAG concluida");
         }
 
         public void drawAnalyze(List<Label> detectLabels, FileImage file)
         {
             pictureBoxImage.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBoxImage.Location = new Point(0, 0);
+            rtbRetornoProcesso.AppendText(Environment.NewLine);
             foreach (Label label in detectLabels)
             {
-                foreach (Instance instance in label.Instances)
+                if (label.Instances.Count > 0)
                 {
-                    rtbRetornoProcesso.AppendText($"{label.Name + Environment.NewLine} ");
+                    rtbRetornoProcesso.AppendText($" -Foram encontrados {label.Instances.Count} objetos da categoria {label.Name}; {Environment.NewLine} ");
                 }
+
             }
+            rtbRetornoProcesso.AppendText("Análise Concluida");
             pictureBoxImage.Image = file.imageAnalizeBitmap;
+            logRegister.Log("Desenho das labels concluida");
 
         }
         [Obsolete("Metodo esperimental estuadando o armazenamento da posição de um item com base nas coordenadas convertidas" +
@@ -241,7 +266,6 @@ namespace AWS_Rekognition_Objects
         {
             List<Label> labelsCarregadas = controller.getDetectLabelsResponse();
 
-
             foreach (Label item in labelsCarregadas)
             {
                 DTO_LabelInstance dto_LabelInstance = new DTO_LabelInstance();
@@ -271,7 +295,8 @@ namespace AWS_Rekognition_Objects
                 }
                 
             }
-            
+            logRegister.Log("Geração de TreeView Concluida");
+
         }
 
         private void treeViewLabels_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -284,7 +309,7 @@ namespace AWS_Rekognition_Objects
             {
                 DTO_LabelInstance instanceLabel = (DTO_LabelInstance)treeNode.Tag;
 
-                if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances != null))
+                if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances.Count != 0))
                 {
                     FileImage InstancesCategory = controller.FilterViewByCategoryInstances(instanceLabel);
                     pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
@@ -293,8 +318,9 @@ namespace AWS_Rekognition_Objects
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Yellow;
                     rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
-                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
-                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Confidence: {instanceLabel.confidence}*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria(s) do objeto*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}---Categoria: {instanceLabel.NameCategoria}---");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Confidence: {instanceLabel.confidence}%*****");
                     if (instanceLabel.parents.Count != 0)
                     {
                         rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
@@ -310,7 +336,7 @@ namespace AWS_Rekognition_Objects
                         contador++;
                     }
                 }
-                else if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances == null))
+                else if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances.Count == 0))
                 {
                     FileImage InstancesCategory = controller.GetFileImage();
                     pictureBoxImage.Image = InstancesCategory.imageAnalizeBitmap;
@@ -319,8 +345,9 @@ namespace AWS_Rekognition_Objects
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Yellow;
                     rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
-                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
-                    rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria(s) do objeto*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}---Categoria: {instanceLabel.NameCategoria}---");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Confidence: {instanceLabel.confidence}%*****");
                     if (instanceLabel.parents.Count != 0)
                     {
                         rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
@@ -340,7 +367,9 @@ namespace AWS_Rekognition_Objects
                     rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
                     rtbRetornoProcesso.ForeColor = Color.Orange;
                     rtbRetornoProcesso.AppendText("*******Descrição Imagem(s)*******");
-                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria do objeto: {instanceLabel.NameCategoria}*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Categoria(s) do objeto*****");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}---Categoria: {instanceLabel.NameCategoria}---");
+                    rtbRetornoProcesso.AppendText($"{Environment.NewLine}****Confidence: {instanceLabel.confidence}%*****");
                     if (instanceLabel.parents.Count != 0)
                     {
                         rtbRetornoProcesso.AppendText(Environment.NewLine + "***Categorias Associadas***" + Environment.NewLine);
@@ -351,15 +380,11 @@ namespace AWS_Rekognition_Objects
                     }
                     PrintOfInstance(instanceLabel.Instance, instanceLabel.nameItem);
                 }
-                else
-                {
-
-                }
             }
         }
 
         public void PrintOfInstance(Instance instanceLabel, string nameItem) {
-            rtbRetornoProcesso.AppendText(Environment.NewLine + "***Imagem***" + Environment.NewLine);
+            rtbRetornoProcesso.AppendText(Environment.NewLine + "*******Imagem******");
             rtbRetornoProcesso.AppendText($"{Environment.NewLine}-- Identificador : {nameItem} -- Confidence: {instanceLabel.Confidence}%--");
             rtbRetornoProcesso.AppendText(Environment.NewLine);
             rtbRetornoProcesso.AppendText("--Coordenadas--");
@@ -382,5 +407,14 @@ namespace AWS_Rekognition_Objects
 
         }
 
+        public void MensagemErro(string cabecalhoErro, string mensageErro)
+        {
+            MessageBox.Show($"{cabecalhoErro}, {mensageErro}");
+            rtbRetornoProcesso.Clear();
+            rtbRetornoProcesso.SelectionAlignment = HorizontalAlignment.Center;
+            rtbRetornoProcesso.ForeColor = Color.Orange;
+            rtbRetornoProcesso.AppendText($"!! {cabecalhoErro} !!" + Environment.NewLine);
+            rtbRetornoProcesso.AppendText(mensageErro);
+        }
     }
 }

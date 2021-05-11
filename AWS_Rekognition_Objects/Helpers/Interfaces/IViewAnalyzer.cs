@@ -13,5 +13,7 @@ namespace AWS_Rekognition_Objects.Helpers
         void drawAnalyze(List<Label> detectLabels, FileImage file);
         void ConstructTAG(List<string> labelsResponse);
         void generateTreeView();
+        void MensagemErro(string cabecalhoErro, string mensageErro);
+        void releaseNumericsUpDown(bool defined);
     }
 }

@@ -26,7 +26,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
         AWSCredentials awsCredentials;
         private static readonly RegionEndpoint region = RegionEndpoint.USEast1;
 
-        private const string bucketName = "demo-unibrasil-imgobjectreko";
+        private const string bucketName = "demo-unibrasil-img-object-reko";
 
         private FileImage file;
 
@@ -46,12 +46,12 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             }
             catch (AmazonS3Exception ex)
             {
-                MessageBox.Show($"Error encontered on server. Message>: '{0}' when writing an object { ex.Message} ");
+                MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
                 return false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error encontered on server. Message>: '{0}' when writing an object { ex.Message} ");
+                MessageBox.Show($"Erro encontrado no servidor, ao escrever objeto { ex.Message} ");
                 return false;
             }
 
@@ -77,7 +77,7 @@ namespace AWS_Rekognition_Objects.Helpers.Model
 
         }
 
-        public async Task<bool> DetectScenes(int numberLabels, Single minConfidence)
+        public async Task<bool> DetectScenes(int numberLabels, float minConfidence)
         {
             AmazonRekognitionClient rekognitionClient = new AmazonRekognitionClient(awsCredentials, region);
             DetectLabelsRequest detectLabelsRequest = new DetectLabelsRequest()
@@ -102,8 +102,6 @@ namespace AWS_Rekognition_Objects.Helpers.Model
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Ocorreu um erro{e.Message}");
-                return false;
                 throw;
             }
 

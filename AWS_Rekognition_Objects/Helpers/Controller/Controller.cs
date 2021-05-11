@@ -52,22 +52,27 @@ namespace AWS_Rekognition_Objects.Helpers.Controller
         public string getFileName() {
             return fileImage.nameFile;
         }
-        public async void AnalyzeImages(int numberLabels, Single minConfidence) {
+        public async void AnalyzeImages(int numberLabels, float minConfidence) {
             bool inclusao = await analizadorArquivo.UploadImageFromS3();
             if (inclusao)
             {
-                await analizadorArquivo.DetectScenes( numberLabels, minConfidence);
-                await DrawAnalysis();
-
-                formPrincipal.generateTreeView();
+                formPrincipal.releaseNumericsUpDown(false);
+                await analizadorArquivo.DetectScenes(numberLabels, minConfidence);
+                DrawAnalysis();
+                formPrincipal.releaseNumericsUpDown(true);
+            }
+            else
+            {
+                formPrincipal.MensagemErro("ERRO" , "Não foi possivei inserir o arquivo no Bucket!");
             }
         }
-        private async Task DrawAnalysis()//DetectLabelsResponse detectLabelsResponse
+        private void DrawAnalysis()//DetectLabelsResponse detectLabelsResponse
         {
             fileImage = processingImages.desenharAnalise(analizadorArquivo.getListlabelObjectsCategories(), fileImage);
             List<Label> labelsResponse = analizadorArquivo.getListlabelObjectsCategories();
             formPrincipal.ConstructTAG(ConstructTAGLabels(labelsResponse));
             formPrincipal.drawAnalyze(labelsResponse, fileImage);
+            formPrincipal.generateTreeView();
 
         }
 
