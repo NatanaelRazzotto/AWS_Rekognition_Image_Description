@@ -153,6 +153,7 @@ namespace AWS_Rekognition_Objects
 
                 if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances.Count != 0))
                 {
+                    
                     FileImage InstancesCategory = controller.FilterViewByCategoryInstances(instanceLabel);
                     pictureBoxImage.Image = InstancesCategory.imagesOfCategoryBitmap;
                     pictureBox1.Image = null;
@@ -177,9 +178,11 @@ namespace AWS_Rekognition_Objects
                         PrintOfInstance(item, $"{instanceLabel.NameCategoria}_{contador}");
                         contador++;
                     }
+                    logRegister.Log("Selecao de Categoria ");
                 }
                 else if ((instanceLabel.Instance == null) && (instanceLabel.CategoryInstances.Count == 0))
                 {
+                    
                     FileImage InstancesCategory = controller.GetFileImage();
                     pictureBoxImage.Image = InstancesCategory.imageAnalizeBitmap;
                     pictureBox1.Image = null;
@@ -198,10 +201,11 @@ namespace AWS_Rekognition_Objects
                             rtbRetornoProcesso.AppendText($"--{categoria.Name}--{Environment.NewLine}");
                         }
                     }
-
+                    logRegister.Log("Selecao de Categoria sem item ");
                 }
                 else if (instanceLabel.Instance != null)
                 {
+                    logRegister.Log("Selecao de Item Categoria ");
                     FileImage InstancesCategory = controller.FilterViewByInstance(instanceLabel);
                     pictureBoxImage.Image = InstancesCategory.imagesBitmap;
                     pictureBox1.Image = InstancesCategory.imageZoom;
@@ -221,6 +225,7 @@ namespace AWS_Rekognition_Objects
                         }
                     }
                     PrintOfInstance(instanceLabel.Instance, instanceLabel.nameItem);
+                    logRegister.Log("Selecao de Item de Categoria ");
                 }
             }
         }
